@@ -8,10 +8,10 @@
     tools:context=".SplashScreen">
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/btnmodolo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
-        tools:layout_editor_absoluteX="149dp"
-        tools:layout_editor_absoluteY="309dp" />
+        android:text="BUTTON"
+        tools:layout_editor_absoluteX="161dp"
+        tools:layout_editor_absoluteY="318dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
