@@ -13,6 +13,7 @@ public class koko extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        /// יחםךיעחןלעין
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_koko);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
