@@ -1,5 +1,7 @@
 package com.example.laracin;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,6 +26,20 @@ public class SplashScreen extends AppCompatActivity {
             return insets;
         });
 
-
+         Thread thread = new Thread(){
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    Intent intent = new Intent(SplashScreen.this, MainActivity.class);
+                    startActivity(intent);
+                }
+            }
+        };
+        thread.start();
     }
 }
