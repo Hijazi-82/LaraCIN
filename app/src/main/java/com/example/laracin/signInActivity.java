@@ -51,5 +51,10 @@ public class signInActivity extends AppCompatActivity
         Intent intent = new Intent(signInActivity.this, SignUp.class);
         startActivity(intent);
         });
+        btnSignIn.setOnClickListener(v -> {
+
+        Intent intent = new Intent(signInActivity.this, MainActivity.class);
+        startActivity(intent);
+        });
     }
 }

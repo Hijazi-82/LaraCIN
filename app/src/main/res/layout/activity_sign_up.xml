@@ -9,143 +9,199 @@
 
     <TextView
         android:id="@+id/textView5"
-        android:layout_width="203dp"
-        android:layout_height="21dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="37dp"
+        android:layout_marginTop="37dp"
+        android:layout_marginEnd="37dp"
+        android:layout_marginBottom="8dp"
         android:text="Welcome To Our Staff"
         android:textSize="20sp"
-        tools:layout_editor_absoluteX="91dp"
-        tools:layout_editor_absoluteY="39dp" />
+        app:layout_constraintBottom_toTopOf="@+id/textView6"
+        app:layout_constraintEnd_toEndOf="@+id/textView6"
+        app:layout_constraintStart_toStartOf="@+id/textView6"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="37dp"
         android:text="Sign up to connect with film professionals"
         android:textSize="16sp"
-        tools:layout_editor_absoluteX="51dp"
-        tools:layout_editor_absoluteY="78dp" />
+        app:layout_constraintBottom_toTopOf="@+id/tvFullName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
     <TextView
         android:id="@+id/tvEmail2"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
         android:text="E-mail"
         android:textSize="16sp"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="215dp" />
+        app:layout_constraintBottom_toTopOf="@+id/edEmail2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etFullname" />
 
     <EditText
-        android:id="@+id/editTextTextEmailAddress2"
-        android:layout_width="match_parent"
+        android:id="@+id/edEmail2"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="E-mail"
         android:inputType="textEmailAddress"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="242dp" />
+        app:layout_constraintBottom_toTopOf="@+id/tvPassword2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvEmail2" />
 
     <TextView
-        android:id="@+id/textView9"
+        android:id="@+id/tvPassword2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
         android:text="Password"
         android:textSize="16sp"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="288dp" />
+        app:layout_constraintBottom_toTopOf="@+id/tvId"
+        app:layout_constraintStart_toStartOf="@+id/edEmail2"
+        app:layout_constraintTop_toBottomOf="@+id/edEmail2" />
 
     <EditText
-        android:id="@+id/editTextTextPassword2"
-        android:layout_width="match_parent"
+        android:id="@+id/edPassword2"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="14dp"
         android:ems="10"
         android:hint="Pasword"
         android:inputType="textPassword"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="307dp" />
+        app:layout_constraintBottom_toBottomOf="@+id/tvId"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/textView10"
-        android:layout_width="40dp"
-        android:layout_height="20dp"
+        android:id="@+id/tvRole"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="9dp"
         android:text="Role"
         android:textSize="16sp"
-        tools:layout_editor_absoluteX="-2dp"
-        tools:layout_editor_absoluteY="478dp" />
+        app:layout_constraintBottom_toTopOf="@+id/spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPhone" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="265dp"
-        android:layout_height="45dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="62dp"
+        android:layout_marginBottom="9dp"
         android:text="Create your role"
-        tools:layout_editor_absoluteX="62dp"
-        tools:layout_editor_absoluteY="594dp" />
+        app:layout_constraintBottom_toTopOf="@+id/textView11"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinner" />
 
     <TextView
         android:id="@+id/textView11"
-        android:layout_width="209dp"
-        android:layout_height="25dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="23dp"
+        android:layout_marginEnd="23dp"
+        android:layout_marginBottom="58dp"
         android:text="Already have an account ?Sign In"
-        tools:layout_editor_absoluteX="85dp"
-        tools:layout_editor_absoluteY="648dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/button"
+        app:layout_constraintStart_toStartOf="@+id/button"
+        app:layout_constraintTop_toBottomOf="@+id/button" />
 
     <TextView
         android:id="@+id/tvFullName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
         android:text="Full Name"
         android:textSize="16sp"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="142dp" />
+        app:layout_constraintBottom_toTopOf="@+id/etFullname"
+        app:layout_constraintStart_toStartOf="@+id/etFullname"
+        app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
     <EditText
         android:id="@+id/etFullname"
-        android:layout_width="404dp"
-        android:layout_height="36dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="9dp"
         android:ems="10"
+        android:hint="Full Name"
         android:inputType="textEmailAddress"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="170dp" />
+        app:layout_constraintBottom_toTopOf="@+id/tvEmail2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvFullName" />
 
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="37dp"
-        android:layout_height="17dp"
+        android:id="@+id/tvId"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="4dp"
         android:text="ID"
         android:textSize="16sp"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="350dp" />
+        app:layout_constraintBottom_toTopOf="@+id/edId"
+        app:layout_constraintEnd_toEndOf="@+id/tvRole"
+        app:layout_constraintStart_toStartOf="@+id/tvPhone"
+        app:layout_constraintTop_toBottomOf="@+id/tvPassword2" />
 
     <EditText
-        android:id="@+id/editTextNumber"
-        android:layout_width="407dp"
-        android:layout_height="40dp"
+        android:id="@+id/edId"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="3dp"
         android:ems="10"
+        android:hint="ID"
         android:inputType="number"
-        tools:layout_editor_absoluteX="-3dp"
-        tools:layout_editor_absoluteY="371dp" />
+        app:layout_constraintBottom_toTopOf="@+id/tvPhone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvId" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/tvPhone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="phone numbare"
+        android:layout_marginStart="1dp"
+        android:layout_marginBottom="42dp"
+        android:text="Phone numbare"
         android:textSize="16sp"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="414dp" />
+        app:layout_constraintBottom_toTopOf="@+id/tvRole"
+        app:layout_constraintStart_toStartOf="@+id/etPhone"
+        app:layout_constraintTop_toBottomOf="@+id/edId" />
 
     <EditText
-        android:id="@+id/editTextPhone"
-        android:layout_width="406dp"
+        android:id="@+id/etPhone"
+        android:layout_width="0dp"
         android:layout_height="43dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="25dp"
         android:ems="10"
+        android:hint="Phone numbare"
         android:inputType="phone"
-        tools:layout_editor_absoluteY="439dp" />
+        app:layout_constraintBottom_toTopOf="@+id/spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvPhone" />
 
     <Spinner
         android:id="@+id/spinner"
-        android:layout_width="397dp"
-        android:layout_height="38dp"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="507dp" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="49dp"
+        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvRole" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
