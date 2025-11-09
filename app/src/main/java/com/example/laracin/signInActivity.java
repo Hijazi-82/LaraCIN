@@ -13,15 +13,14 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class signInActivity extends AppCompatActivity
-{
- private TextView tvFilmconnect;
- private TextView tvSignin;
- private TextView tvEmail;
- private EditText etEmail;
- private TextView tvPassword;
- private EditText etPassword;
- private Button btnSignIn;
+public class signInActivity extends AppCompatActivity {
+    private TextView tvFilmconnect;
+    private TextView tvSignin;
+    private TextView tvEmail;
+    private EditText etEmail;
+    private TextView tvPassword;
+    private EditText etPassword;
+    private Button btnSignIn;
     private TextView tvAsk;
 
     @SuppressLint("MissingInflatedId")
@@ -48,13 +47,13 @@ public class signInActivity extends AppCompatActivity
         });
         tvAsk.setOnClickListener(v -> {
 
-        Intent intent = new Intent(signInActivity.this, SignUp.class);
-        startActivity(intent);
+            Intent intent = new Intent(signInActivity.this, SignUp.class);
+            startActivity(intent);
         });
         btnSignIn.setOnClickListener(v -> {
 
-        Intent intent = new Intent(signInActivity.this, MainActivity.class);
-        startActivity(intent);
+            Intent intent = new Intent(signInActivity.this, MainActivity.class);
+            startActivity(intent);
         });
     }
 }

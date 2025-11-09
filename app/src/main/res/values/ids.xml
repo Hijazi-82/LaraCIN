@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="btnMyList" type="id" />
+    <item name="btnSearchMovies" type="id" />
+    <item name="tvMyList" type="id" />
+    <item name="tvAddMovie" type="id" />
+    <item name="tvSearchMovies" type="id" />
+</resources>
