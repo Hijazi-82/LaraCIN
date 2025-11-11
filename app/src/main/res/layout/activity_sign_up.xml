@@ -18,12 +18,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Welcome To Our Staff"
+            android:textColor="#120B0B"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="#EA2A2A"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/textView6"
@@ -191,7 +191,7 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginTop="24dp"
-            android:backgroundTint="#EA2A2A"
+            android:backgroundTint="#120B0B"
             android:text="SignUp"
             android:textColor="#FFFFFF"
             android:textStyle="bold"
