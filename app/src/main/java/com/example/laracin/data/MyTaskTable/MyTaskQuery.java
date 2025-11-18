@@ -26,9 +26,10 @@ public interface MyTaskQuery {
     @Query("SELECT * FROM MyTask WHERE taskId = :id LIMIT 1")
     MyTask getTaskById(long id);
 
-    @Query("SELECT * FROM MyTask WHERE is_done = 1")
+    @Query("SELECT * FROM MyTask WHERE isDone = 1")
     List<MyTask> getCompletedTasks();
 
-    @Query("SELECT * FROM MyTask WHERE is_done = 0")
+    @Query("SELECT * FROM MyTask WHERE isDone = 0")
     List<MyTask> getPendingTasks();
 }
+
