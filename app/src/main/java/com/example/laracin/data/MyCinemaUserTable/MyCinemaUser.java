@@ -18,6 +18,12 @@ public class MyCinemaUser {
     public String phone;
     public String role;
 
+    public static void insert(MyCinemaUserQuery myCinemaUserQuery) {
+    }
+
+    public static MyCinemaUser findByEmail(String email) {
+    }
+
     // Setters and Getters
     public long getKeyId() {
         return keyId;
@@ -77,5 +83,6 @@ public class MyCinemaUser {
                 ", phone='" + phone + '\'' +
                 ", role='" + role + '\'' +
                 '}';
+
     }
 }
