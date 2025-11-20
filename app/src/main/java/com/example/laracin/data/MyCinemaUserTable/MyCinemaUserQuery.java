@@ -20,6 +20,7 @@ public interface MyCinemaUserQuery {
     @Delete
     void deleteUser(MyCinemaUserQuery user);
 
+
     @Query("SELECT * FROM MyUser")
     List<MyCinemaUserQuery> getAllUsers();
 
@@ -31,4 +32,8 @@ public interface MyCinemaUserQuery {
 
     @Query("SELECT * FROM MyUser WHERE email = :email AND password = :password LIMIT 1")
     MyCinemaUserQuery login(String email, String password);
+
+
+
+
 }

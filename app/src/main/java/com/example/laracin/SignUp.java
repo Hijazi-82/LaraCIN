@@ -3,6 +3,7 @@ package com.example.laracin;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -57,7 +58,20 @@ public class SignUp extends AppCompatActivity {
 
         });
     }
+    public boolean validAndReadData()
+    {
+        String fullName = etFullName.getText().toString();
+        String id = etId.getText().toString();
+        String phone = etPhone.getText().toString();
+        String email2 = etEmail2.getText().toString();
+        String password2 = etPassword2.getText().toString();
+        if(fullName.isEmpty() || id.isEmpty() || phone.isEmpty() || email2.isEmpty() || password2.isEmpty())
+        {
+            return false;
+        }
+        return true;
 
-
+    }
 
 }
+

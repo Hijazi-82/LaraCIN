@@ -10,9 +10,10 @@ import com.example.laracin.data.MyCinemaUserTable.MyCinemaUser;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery;
 import com.example.laracin.data.MyTaskTable.MyTask;
 import com.example.laracin.data.MyTaskTable.MyTaskQuery;
+import com.example.laracin.data.mycinemaTable.cinemaQuery;
 
 
-    @Database(entities = {MyCinemaUser.class, MyTask.class}, version = 1)
+@Database(entities = {MyCinemaUser.class, MyTask.class}, version = 1)
     public abstract class AppDatabase extends RoomDatabase {
         private static AppDatabase dp;
         public abstract MyCinemaUserQuery myCinemaUserQuery();
