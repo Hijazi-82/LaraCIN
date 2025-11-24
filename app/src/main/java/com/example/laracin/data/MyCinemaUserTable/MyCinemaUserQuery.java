@@ -12,28 +12,23 @@ import java.util.List;
 public interface MyCinemaUserQuery {
 
     @Insert
-    void insertUser(MyCinemaUserQuery user);
+    void insertUser(MyCinemaUser user);
 
     @Update
-    void updateUser(MyCinemaUserQuery user);
+    void updateUser(MyCinemaUser user);
 
     @Delete
-    void deleteUser(MyCinemaUserQuery user);
-
+    void deleteUser(MyCinemaUser user);
 
     @Query("SELECT * FROM MyUser")
-    List<MyCinemaUserQuery> getAllUsers();
+    List<MyCinemaUser> getAllUsers();
 
     @Query("SELECT * FROM MyUser WHERE keyId = :id LIMIT 1")
-    MyCinemaUserQuery getUserById(long id);
+    MyCinemaUser getUserById(long id);
 
     @Query("SELECT * FROM MyUser WHERE email = :email LIMIT 1")
-    MyCinemaUserQuery getUserByEmail(String email);
+    MyCinemaUser getUserByEmail(String email);
 
     @Query("SELECT * FROM MyUser WHERE email = :email AND password = :password LIMIT 1")
-    MyCinemaUserQuery login(String email, String password);
-
-
-
-
+    MyCinemaUser login(String email, String password);
 }

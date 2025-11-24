@@ -22,11 +22,12 @@ public class MyCinemaUser {
     }
 
     public static MyCinemaUser findByEmail(String email) {
+        return null;
     }
 
     // Setters and Getters
     public long getKeyId() {
-        return keyId;
+        return 0;
     }
 
     public void setKeyId(long keyId) {

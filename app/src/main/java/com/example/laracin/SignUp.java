@@ -117,37 +117,37 @@ public class SignUp extends AppCompatActivity {
         // Insert a new record in the database
         MyCinemaUser.insert(new MyCinemaUserQuery() {
             @Override
-            public void insertUser(MyCinemaUserQuery user) {
+            public void insertUser(MyCinemaUser user) {
 
             }
 
             @Override
-            public void updateUser(MyCinemaUserQuery user) {
+            public void updateUser(MyCinemaUser user) {
 
             }
 
             @Override
-            public void deleteUser(MyCinemaUserQuery user) {
+            public void deleteUser(MyCinemaUser user) {
 
             }
 
             @Override
-            public List<MyCinemaUserQuery> getAllUsers() {
+            public List<MyCinemaUser> getAllUsers() {
                 return Collections.emptyList();
             }
 
             @Override
-            public MyCinemaUserQuery getUserById(long id) {
+            public MyCinemaUser getUserById(long id) {
                 return null;
             }
 
             @Override
-            public MyCinemaUserQuery getUserByEmail(String email) {
+            public MyCinemaUser getUserByEmail(String email) {
                 return null;
             }
 
             @Override
-            public MyCinemaUserQuery login(String email, String password) {
+            public MyCinemaUser login(String email, String password) {
                 return null;
             }
         });
