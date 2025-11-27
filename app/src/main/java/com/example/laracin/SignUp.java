@@ -12,15 +12,10 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
+import com.example.laracin.data.AppDatabase;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemaUser;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery;
-
-import java.util.Collections;
-import java.util.List;
 
 public class SignUp extends AppCompatActivity {
     private Button btnSignUp;
@@ -56,8 +51,7 @@ public class SignUp extends AppCompatActivity {
         textView6 = findViewById(R.id.textView6);
         tvSignIn = findViewById(R.id.tvSignIn);
         btnSignUp.setOnClickListener(v -> {
-            Intent intent = new Intent(SignUp.this, MainActivity.class);
-            startActivity(intent);
+     validateAndInsertRecord();
 
         });
         tvSignIn.setOnClickListener(v -> {
@@ -76,135 +70,63 @@ public class SignUp extends AppCompatActivity {
         String email = etEmail2.getText().toString().trim();
         String password = etPassword2.getText().toString().trim();
 
-        // Perform validation
+        boolean isValid = true;
+
         if (TextUtils.isEmpty(fullName)) {
             etFullName.setError("Full name is required");
-            return false;
+            isValid = false;
         }
 
         if (TextUtils.isEmpty(id)) {
             etId.setError("ID is required");
-            return false;
+            isValid = false;
         }
 
         if (!Patterns.PHONE.matcher(phone).matches()) {
             etPhone.setError("Invalid phone number");
-            return false;
+            isValid = false;
         }
 
         if (TextUtils.isEmpty(email)) {
             etEmail2.setError("Email is required");
-            return false;
+            isValid = false;
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             etEmail2.setError("Invalid email");
-            return false;
+            isValid = false;
         }
 
         if (password.length() < 6) {
             etPassword2.setError("Password must be at least 6 characters long");
-            return false;
+            isValid = false;
         }
 
         // Check if the record already exists in the database
-        MyCinemaUser user = MyCinemaUser.findByEmail(email);
+        MyCinemaUser user = AppDatabase.getDb(this).myCinemaUserQuery().getUserByEmail(email);
         if (user != null) {
             etEmail2.setError("Email already exists");
-            return false;
+            isValid = false;
         }
 
-        // Insert a new record in the database
-        MyCinemaUser.insert(new MyCinemaUserQuery() {
-            @Override
-            public void insertUser(MyCinemaUser user) {
+        if (isValid) {
+            // Create a new MyCinemaUser object
+            MyCinemaUser myuser = new MyCinemaUser();
+            myuser.setFullName(fullName);
+            myuser.setEmail(email);
+            myuser.setPassword(password);
+            myuser.setPhone(phone);
+            myuser.setRole("myuser");
 
-            }
+            // Insert the record into the database
+            AppDatabase.getDb(this).myCinemaUserQuery().insertUser(myuser);
+            // Show success message
+            Toast.makeText(this, "Record inserted successfully", Toast.LENGTH_SHORT).show();
+        }
 
-            @Override
-            public void updateUser(MyCinemaUser user) {
-
-            }
-
-            @Override
-            public void deleteUser(MyCinemaUser user) {
-
-            }
-
-            @Override
-            public List<MyCinemaUser> getAllUsers() {
-                return Collections.emptyList();
-            }
-
-            @Override
-            public MyCinemaUser getUserById(long id) {
-                return null;
-            }
-
-            @Override
-            public MyCinemaUser getUserByEmail(String email) {
-                return null;
-            }
-
-            @Override
-            public MyCinemaUser login(String email, String password) {
-                return null;
-            }
-        });
-
-        // Show success message
-        Toast.makeText(this, "Record inserted successfully", Toast.LENGTH_SHORT).show();
-
-        return true;
+        return isValid;
     }
-    public boolean validateAndReadData() {
-        String name = etFullName.getText().toString().trim();
-        String email = etEmail2.getText().toString().trim();
-        String password = etPassword2.getText().toString().trim();
 
-
-        boolean isValid = true;
-
-        if (name.isEmpty()) {
-            etFullName.setError("Name is required");
-            isValid = false;
-        }
-        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etEmail2.setError("Enter a valid email");
-            isValid = false;
-        }
-        if (password.length() < 6) {
-            etPassword2.setError("Password must be at least 6 characters");
-            isValid = false;
-        }
-        if (!password.equals(etPassword2)) {
-            etPassword2.setError("Passwords don't match");
-            isValid = false;
-        }
-
-        if (!isValid) return false;
-
-        // Check if email already exists
-        MyCinemaUser existingUser = dao.getUserByEmail(email);
-        if (existingUser != null) {
-            Toast.makeText(this, "Email already exists ❌", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        // إنشاء مستخدم جديد + قيم أولية
-        MyCinemaUser user = new MyCinemaUser();
-        user.setFullName(name);
-        user.setEmail(email);
-        user.setPassword(password);
-
-
-        // حفظه في قاعدة البيانات
-        dao.insertUser(user);
-
-        Toast.makeText(this, "Account Created Successfully ✔", Toast.LENGTH_SHORT).show();
-
-        return true;
-    }
 
 }
 

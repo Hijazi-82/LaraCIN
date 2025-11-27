@@ -10,22 +10,21 @@ import com.example.laracin.data.MyCinemaUserTable.MyCinemaUser;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery;
 import com.example.laracin.data.MyTaskTable.MyTask;
 import com.example.laracin.data.MyTaskTable.MyTaskQuery;
-import com.example.laracin.data.mycinemaTable.cinemaQuery;
 
 
 @Database(entities = {MyCinemaUser.class, MyTask.class}, version = 1)
     public abstract class AppDatabase extends RoomDatabase {
-        private static AppDatabase dp;
+        private static AppDatabase db;
         public abstract MyCinemaUserQuery myCinemaUserQuery();
         public abstract MyTaskQuery myTaskQuery();
-        public static AppDatabase getDp(Context context) {
-            if (dp == null) {
-                dp = Room.databaseBuilder(context,AppDatabase.class,"HijaziDatabase")
+        public static AppDatabase getDb(Context context) {
+            if (db == null) {
+                db = Room.databaseBuilder(context,AppDatabase.class,"HijaziDatabase")
                 .fallbackToDestructiveMigration()
                  .allowMainThreadQueries()
                 .build();
             }
-            return dp;
+            return db;
         }
     }
 

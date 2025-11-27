@@ -14,6 +14,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.laracin.data.AppDatabase;
+import com.example.laracin.data.MyCinemaUserTable.MyCinemaUser;
+
 public class signInActivity extends AppCompatActivity {
     private TextView tvFilmconnect;
     private TextView tvSignin;
@@ -52,9 +55,7 @@ public class signInActivity extends AppCompatActivity {
             startActivity(intent);
         });
         btnSignIn.setOnClickListener(v -> {
-
-            Intent intent = new Intent(signInActivity.this, MainActivity.class);
-            startActivity(intent);
+        validateInputs();
         });
     }
     private boolean validateInputs() {
@@ -73,6 +74,19 @@ public class signInActivity extends AppCompatActivity {
             isValid = false;
         }
 
+        MyCinemaUser user = AppDatabase.getDb(this).myCinemaUserQuery().getUserByEmail(email);
+        if (user == null || !user.getPassword().equals(password)) {
+            etEmail.setError("Invalid email or password");
+            etPassword.setError("Invalid email or password");
+            isValid = false;
+        }
+        else {
+            etEmail.setError(null);
+            etPassword.setError(null);
+            isValid = true;
+            Intent intent = new Intent(signInActivity.this, MainActivity.class);
+            startActivity(intent);
+        }
         return isValid;
     }
 

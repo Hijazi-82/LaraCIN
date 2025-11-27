@@ -21,9 +21,7 @@ public class MyCinemaUser {
     public static void insert(MyCinemaUserQuery myCinemaUserQuery) {
     }
 
-    public static MyCinemaUser findByEmail(String email) {
-        return null;
-    }
+
 
     // Setters and Getters
     public long getKeyId() {
