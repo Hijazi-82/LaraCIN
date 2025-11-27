@@ -24,10 +24,10 @@ import java.util.List;
 
 public class SignUp extends AppCompatActivity {
     private Button btnSignUp;
-    private EditText etFullName, etId, etPhone, etEmail2, etPassword2;
+    private EditText etFullName, etId, etPhone, etEmail2, etPassword2 ;
     private TextView tvRole , tvFullName , tvId , tvPhone , tvEmail2 , tvPassword2;
     private TextView textView5 , textView6 , tvSignIn;
-
+    private MyCinemaUserQuery dao;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -154,6 +154,54 @@ public class SignUp extends AppCompatActivity {
 
         // Show success message
         Toast.makeText(this, "Record inserted successfully", Toast.LENGTH_SHORT).show();
+
+        return true;
+    }
+    public boolean validateAndReadData() {
+        String name = etFullName.getText().toString().trim();
+        String email = etEmail2.getText().toString().trim();
+        String password = etPassword2.getText().toString().trim();
+
+
+        boolean isValid = true;
+
+        if (name.isEmpty()) {
+            etFullName.setError("Name is required");
+            isValid = false;
+        }
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail2.setError("Enter a valid email");
+            isValid = false;
+        }
+        if (password.length() < 6) {
+            etPassword2.setError("Password must be at least 6 characters");
+            isValid = false;
+        }
+        if (!password.equals(etPassword2)) {
+            etPassword2.setError("Passwords don't match");
+            isValid = false;
+        }
+
+        if (!isValid) return false;
+
+        // Check if email already exists
+        MyCinemaUser existingUser = dao.getUserByEmail(email);
+        if (existingUser != null) {
+            Toast.makeText(this, "Email already exists ❌", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        // إنشاء مستخدم جديد + قيم أولية
+        MyCinemaUser user = new MyCinemaUser();
+        user.setFullName(name);
+        user.setEmail(email);
+        user.setPassword(password);
+
+
+        // حفظه في قاعدة البيانات
+        dao.insertUser(user);
+
+        Toast.makeText(this, "Account Created Successfully ✔", Toast.LENGTH_SHORT).show();
 
         return true;
     }

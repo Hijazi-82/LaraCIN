@@ -3,6 +3,7 @@ package com.example.laracin;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -56,4 +57,23 @@ public class signInActivity extends AppCompatActivity {
             startActivity(intent);
         });
     }
+    private boolean validateInputs() {
+        String email = etEmail.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+
+        boolean isValid = true;
+
+        if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.setError("Enter a valid email");
+            isValid = false;
+        }
+
+        if (password.isEmpty() || password.length() < 6) {
+            etPassword.setError("Password must be at least 6 characters");
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
 }
