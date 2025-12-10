@@ -1,4 +1,4 @@
-package com.example.laracin.data.MyTaskTable;
+package com.example.laracin.data.MyArtistTable;
 
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -9,7 +9,7 @@ import androidx.room.Update;
 import java.util.List;
 
 @Dao
-public interface MyTaskQuery {
+public interface MyArtistQuery {
 
     @Insert
     void insertTask(MyTask task);

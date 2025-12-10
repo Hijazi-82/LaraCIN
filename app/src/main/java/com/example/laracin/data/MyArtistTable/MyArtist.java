@@ -1,11 +1,10 @@
-package com.example.laracin.data.MyTaskTable;
+package com.example.laracin.data.MyArtistTable;
 
-import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "MyTask")
-public class MyTask {
+public class MyArtist {
 
     @PrimaryKey(autoGenerate = true)
     public long taskId;

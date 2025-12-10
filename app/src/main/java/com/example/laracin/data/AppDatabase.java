@@ -8,15 +8,15 @@ import androidx.room.RoomDatabase;
 
 import com.example.laracin.data.MyCinemaUserTable.MyCinemaUser;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery;
-import com.example.laracin.data.MyTaskTable.MyTask;
-import com.example.laracin.data.MyTaskTable.MyTaskQuery;
+import com.example.laracin.data.MyArtistTable.MyArtistQuery;
+import com.example.laracin.data.MyArtistTable.MyTask;
 
 
 @Database(entities = {MyCinemaUser.class, MyTask.class}, version = 1)
     public abstract class AppDatabase extends RoomDatabase {
         private static AppDatabase db;
         public abstract MyCinemaUserQuery myCinemaUserQuery();
-        public abstract MyTaskQuery myTaskQuery();
+        public abstract MyArtistQuery myTaskQuery();
         public static AppDatabase getDb(Context context) {
             if (db == null) {
                 db = Room.databaseBuilder(context,AppDatabase.class,"HijaziDatabase")
