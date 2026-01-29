@@ -4,213 +4,195 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="#1A1A1A"
+    android:fillViewport="true"
     tools:context=".SignUp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- العنوان -->
+        <!-- Header -->
         <TextView
             android:id="@+id/textView5"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Welcome To Our Staff"
-            android:textColor="#120B0B"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:fontFamily="sans-serif-medium"
+            android:text="Create Your Profile"
+            android:textColor="@color/white"
+            android:textSize="26sp" />
 
         <TextView
             android:id="@+id/textView6"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sign up to connect with film professionals"
-            android:textSize="14sp"
-            android:textColor="#666666"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@id/textView5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:layout_marginTop="4dp"
+            android:text="Join the cinema community"
+            android:textColor="#AFAFAF"
+            android:textSize="16sp" />
 
         <!-- Full Name -->
-        <TextView
-            android:id="@+id/tvFullName"
-            android:layout_width="0dp"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Full Name"
-            android:textSize="14sp"
-            android:textColor="#000000"
             android:layout_marginTop="24dp"
-            app:layout_constraintTop_toBottomOf="@id/textView6"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:hint="Full Name"
+            app:hintTextColor="#AFAFAF">
 
-        <EditText
-            android:id="@+id/etFullname"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:hint="Enter your full name"
-            android:background="@android:drawable/edit_text"
-            android:inputType="textPersonName"
-            android:padding="12dp"
-            app:layout_constraintTop_toBottomOf="@id/tvFullName"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etFullname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName|textCapWords"
+                android:textColor="@color/white" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Email -->
-        <TextView
-            android:id="@+id/tvEmail2"
-            android:layout_width="0dp"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="E-mail"
-            android:textSize="14sp"
-            android:textColor="#000000"
             android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/etFullname"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:hint="E-mail"
+            app:hintTextColor="#AFAFAF">
 
-        <EditText
-            android:id="@+id/edEmail2"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:hint="Enter your email"
-            android:background="@android:drawable/edit_text"
-            android:inputType="textEmailAddress"
-            android:padding="12dp"
-            app:layout_constraintTop_toBottomOf="@id/tvEmail2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/eiEmail2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/white" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Password -->
-        <TextView
-            android:id="@+id/tvPassword2"
-            android:layout_width="0dp"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Password"
-            android:textSize="14sp"
-            android:textColor="#000000"
             android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/edEmail2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:hint="Password"
+            app:endIconMode="password_toggle"
+            app:hintTextColor="#AFAFAF">
 
-        <EditText
-            android:id="@+id/edPassword2"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:hint="Enter your password"
-            android:background="@android:drawable/edit_text"
-            android:inputType="textPassword"
-            android:padding="12dp"
-            app:layout_constraintTop_toBottomOf="@id/tvPassword2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edPassword2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:textColor="@color/white" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- ID -->
-        <TextView
-            android:id="@+id/tvId"
-            android:layout_width="0dp"
+        <!-- Phone Number -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ID"
-            android:textSize="14sp"
-            android:textColor="#000000"
             android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/edPassword2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:hint="Phone Number"
+            app:hintTextColor="#AFAFAF">
 
-        <EditText
-            android:id="@+id/edId"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:hint="Enter your ID"
-            android:background="@android:drawable/edit_text"
-            android:inputType="number"
-            android:padding="12dp"
-            app:layout_constraintTop_toBottomOf="@id/tvId"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="phone"
+                android:textColor="@color/white" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Phone -->
-        <TextView
-            android:id="@+id/tvPhone"
-            android:layout_width="0dp"
+        <!-- Role / Specialty -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Phone Number"
-            android:textSize="14sp"
-            android:textColor="#000000"
             android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/edId"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:hint="Your Role (e.g., Director, Actor)"
+            app:hintTextColor="#AFAFAF">
 
-        <EditText
-            android:id="@+id/etPhone"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:hint="Enter your phone number"
-            android:background="@android:drawable/edit_text"
-            android:inputType="phone"
-            android:padding="12dp"
-            app:layout_constraintTop_toBottomOf="@id/tvPhone"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <AutoCompleteTextView
+                android:id="@+id/acRole"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:textColor="@color/white"
+                tools:ignore="LabelFor" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Role -->
-        <TextView
-            android:id="@+id/tvRole"
-            android:layout_width="0dp"
+        <!-- Portfolio URL -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Role"
-            android:textSize="14sp"
-            android:textColor="#000000"
             android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/etPhone"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:hint="Portfolio Link (Vimeo, YouTube, etc.)"
+            app:hintTextColor="#AFAFAF">
 
-        <Spinner
-            android:id="@+id/spinner"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:background="@android:drawable/edit_text"
-            android:padding="8dp"
-            app:layout_constraintTop_toBottomOf="@id/tvRole"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPortfolio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textUri"
+                android:textColor="@color/white" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- زر الإنشاء -->
+        <!-- Experience Years -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Years of Experience"
+            app:hintTextColor="#AFAFAF">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etExperienceYears"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:textColor="@color/white" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Skills -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Skills (e.g., Editing, Lighting, Writing)"
+            app:hintTextColor="#AFAFAF">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSkills"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences"
+                android:textColor="@color/white" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <!-- Sign Up Button -->
         <Button
             android:id="@+id/btSignUp"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="24dp"
-            android:backgroundTint="#120B0B"
-            android:text="SignUp"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/spinner" />
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="32dp"
+            android:text="Sign Up"
+            android:textSize="18sp"
+            app:cornerRadius="12dp" />
 
-        <!-- رابط تسجيل الدخول -->
+        <!-- Link to Sign In -->
         <TextView
             android:id="@+id/tvSignIn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:padding="8dp"
             android:text="Already have an account? Sign In"
-            android:textColor="#EA2A2A"
-            android:textSize="14sp"
-            android:layout_marginTop="12dp"
-            app:layout_constraintTop_toBottomOf="@id/btSignUp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:textColor="?attr/colorPrimary"
+            android:textSize="14sp" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </ScrollView>

@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "MyUser")
+@Entity
 public class MyCinemaUser {
 
     @PrimaryKey(autoGenerate = true)
@@ -17,15 +17,12 @@ public class MyCinemaUser {
     public String password;
     public String phone;
     public String role;
+    public String portfolio;
+    public int experienceYears; // عدد سنوات الخبرة
+    public String skills; // المهارات (مثال: "مونتاج فيديو، إضاءة، Final Cut Pro")
 
-    public static void insert(MyCinemaUserQuery myCinemaUserQuery) {
-    }
-
-
-
-    // Setters and Getters
     public long getKeyId() {
-        return 0;
+        return keyId;
     }
 
     public void setKeyId(long keyId) {
@@ -72,6 +69,30 @@ public class MyCinemaUser {
         this.role = role;
     }
 
+    public String getPortfolio() {
+        return portfolio;
+    }
+
+    public void setPortfolio(String portfolio) {
+        this.portfolio = portfolio;
+    }
+
+    public int getExperienceYears() {
+        return experienceYears;
+    }
+
+    public void setExperienceYears(int experienceYears) {
+        this.experienceYears = experienceYears;
+    }
+
+    public String getSkills() {
+        return skills;
+    }
+
+    public void setSkills(String skills) {
+        this.skills = skills;
+    }
+
     @Override
     public String toString() {
         return "MyCinemaUser{" +
@@ -81,7 +102,9 @@ public class MyCinemaUser {
                 ", password='" + password + '\'' +
                 ", phone='" + phone + '\'' +
                 ", role='" + role + '\'' +
+                ", portfolio='" + portfolio + '\'' +
+                ", experienceYears=" + experienceYears +
+                ", skills='" + skills + '\'' +
                 '}';
-
     }
 }

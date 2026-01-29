@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,12 +16,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.laracin.data.AppDatabase;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemaUser;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery;
+import com.google.android.material.textfield.TextInputEditText;
 
 public class SignUp extends AppCompatActivity {
     private Button btnSignUp;
-    private EditText etFullName, etId, etPhone, etEmail2, etPassword2 ;
-    private TextView tvRole , tvFullName , tvId , tvPhone , tvEmail2 , tvPassword2;
-    private TextView textView5 , textView6 , tvSignIn;
+    private TextInputEditText etFullName, etEmail2, etPhone, eiEmail2, etPassword2 , etPorfolio ,etExperienceYears, etSkills ;
+
+    private AutoCompleteTextView acRole ;
+    private TextView  tvSignIn;
     private MyCinemaUserQuery dao;
 
     @SuppressLint("MissingInflatedId")
@@ -37,18 +39,10 @@ public class SignUp extends AppCompatActivity {
 //        });
         btnSignUp = findViewById(R.id.btSignUp);
         etFullName = findViewById(R.id.etFullname);
-        etId = findViewById(R.id.edId);
         etPhone = findViewById(R.id.etPhone);
-        etEmail2 = findViewById(R.id.edEmail2);
+        etEmail2 = findViewById(R.id.eiEmail2);
         etPassword2 = findViewById(R.id.edPassword2);
-        tvRole = findViewById(R.id.tvRole);
-        tvFullName = findViewById(R.id.tvFullName);
-        tvId = findViewById(R.id.tvId);
-        tvPhone = findViewById(R.id.tvPhone);
-        tvEmail2 = findViewById(R.id.tvEmail2);
-        tvPassword2 = findViewById(R.id.tvPassword2);
-        textView5 = findViewById(R.id.textView5);
-        textView6 = findViewById(R.id.textView6);
+
         tvSignIn = findViewById(R.id.tvSignIn);
         btnSignUp.setOnClickListener(v -> {
      validateAndInsertRecord();
@@ -65,7 +59,7 @@ public class SignUp extends AppCompatActivity {
     private boolean validateAndInsertRecord() {
         // Read data from EditText fields
         String fullName = etFullName.getText().toString().trim();
-        String id = etId.getText().toString().trim();
+
         String phone = etPhone.getText().toString().trim();
         String email = etEmail2.getText().toString().trim();
         String password = etPassword2.getText().toString().trim();
@@ -77,10 +71,6 @@ public class SignUp extends AppCompatActivity {
             isValid = false;
         }
 
-        if (TextUtils.isEmpty(id)) {
-            etId.setError("ID is required");
-            isValid = false;
-        }
 
         if (!Patterns.PHONE.matcher(phone).matches()) {
             etPhone.setError("Invalid phone number");
