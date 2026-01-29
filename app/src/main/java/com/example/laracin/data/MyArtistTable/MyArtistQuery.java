@@ -12,24 +12,24 @@ import java.util.List;
 public interface MyArtistQuery {
 
     @Insert
-    void insertTask(MyTask task);
+    void insertTask(MyArtist task);
 
     @Update
-    void updateTask(MyTask task);
+    void updateTask(MyArtist task);
 
     @Delete
-    void deleteTask(MyTask task);
+    void deleteTask(MyArtist task);
 
-    @Query("SELECT * FROM MyTask")
-    List<MyTask> getAllTasks();
+    @Query("SELECT * FROM MyArtist")
+    List<MyArtist> getAllTasks();
 
-    @Query("SELECT * FROM MyTask WHERE taskId = :id LIMIT 1")
-    MyTask getTaskById(long id);
+    @Query("SELECT * FROM MyArtist WHERE taskId = :id LIMIT 1")
+    MyArtist getTaskById(long id);
 
-    @Query("SELECT * FROM MyTask WHERE isDone = 1")
-    List<MyTask> getCompletedTasks();
+    @Query("SELECT * FROM MyArtist WHERE isDone = 1")
+    List<MyArtist> getCompletedTasks();
 
-    @Query("SELECT * FROM MyTask WHERE isDone = 0")
-    List<MyTask> getPendingTasks();
+    @Query("SELECT * FROM MyArtist WHERE isDone = 0")
+    List<MyArtist> getPendingTasks();
 }
 

@@ -9,10 +9,10 @@ import androidx.room.RoomDatabase;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemaUser;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery;
 import com.example.laracin.data.MyArtistTable.MyArtistQuery;
-import com.example.laracin.data.MyArtistTable.MyTask;
+import com.example.laracin.data.MyArtistTable.MyArtist;
 
 
-@Database(entities = {MyCinemaUser.class, MyTask.class}, version = 1)
+@Database(entities = {MyCinemaUser.class, MyArtist.class}, version =2)
     public abstract class AppDatabase extends RoomDatabase {
         private static AppDatabase db;
         public abstract MyCinemaUserQuery myCinemaUserQuery();
