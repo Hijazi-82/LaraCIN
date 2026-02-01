@@ -20,15 +20,19 @@ public interface MyCinemaUserQuery {
     @Delete
     void deleteUser(MyCinemaUser user);
 
-    @Query("SELECT * FROM MyUser")
+    // استعلام للحصول على جميع المستخدمين
+    @Query("SELECT * FROM MyCinemaUser")
     List<MyCinemaUser> getAllUsers();
 
-    @Query("SELECT * FROM MyUser WHERE keyId = :id LIMIT 1")
+    // استعلام للحصول على مستخدم حسب الـ keyId
+    @Query("SELECT * FROM MyCinemaUser WHERE keyId = :id LIMIT 1")
     MyCinemaUser getUserById(long id);
 
-    @Query("SELECT * FROM MyUser WHERE email = :email LIMIT 1")
+    // استعلام للحصول على مستخدم حسب البريد الإلكتروني
+    @Query("SELECT * FROM MyCinemaUser WHERE email = :email LIMIT 1")
     MyCinemaUser getUserByEmail(String email);
 
-    @Query("SELECT * FROM MyUser WHERE email = :email AND password = :password LIMIT 1")
+    // استعلام لتسجيل الدخول باستخدام البريد الإلكتروني وكلمة المرور
+    @Query("SELECT * FROM MyCinemaUser WHERE email = :email AND password = :password LIMIT 1")
     MyCinemaUser login(String email, String password);
 }
