@@ -84,7 +84,7 @@ public class signInActivity extends AppCompatActivity {
             etEmail.setError(null);
             etPassword.setError(null);
             isValid = true;
-            Intent intent = new Intent(signInActivity.this, MainActivity.class);
+            Intent intent = new Intent(signInActivity.this, Activity_main1.class);
             startActivity(intent);
         }
         return isValid;

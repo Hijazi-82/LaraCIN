@@ -159,6 +159,7 @@ public class SignUp extends AppCompatActivity {
             Toast.makeText(this,
                     "Record inserted successfully",
                     Toast.LENGTH_SHORT).show();
+            finish();
         }
 
         return isValid;
