@@ -21,6 +21,7 @@ public class MyCinemaUser {
     public int experienceYears; // عدد سنوات الخبرة
     public String skills; // المهارات (مثال: "مونتاج فيديو، إضاءة، Final Cut Pro")
 
+
     public long getKeyId() {
         return keyId;
     }
@@ -107,4 +108,5 @@ public class MyCinemaUser {
                 ", skills='" + skills + '\'' +
                 '}';
     }
+
 }
