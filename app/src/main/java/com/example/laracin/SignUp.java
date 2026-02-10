@@ -207,19 +207,24 @@ public class SignUp extends AppCompatActivity {
             String name = etFullName.getText().toString();
             String email = etEmail2.getText().toString();
             String Password= etPassword2.getText().toString();
+            String phone = etPhone.getText().toString();
+            String role = acRole.getText().toString();
+            String portfolio = etPortfolio.getText().toString();
+            String experienceYears = etExperienceYears.getText().toString();
+            String skills = etSkills.getText().toString();
 
 
 
 
 
             if (!name.isEmpty() && !email.isEmpty()) {
-                MyUser newUser = new MyUser(name, email);
+                MyCinemaUser newUser = new MyCinemaUser(name, email);
                 saveUser(newUser);
 
 
                 // مسح حقول الإدخال
-                nameEditText.setText("");
-                emailEditText.setText("");
+                etFullName.setText("");
+                etEmail2.setText("");
             } else {
                 Log.w(TAG, "الرجاء إدخال الاسم والبريد الإلكتروني.");
             }
