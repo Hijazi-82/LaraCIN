@@ -63,7 +63,7 @@ public class signInActivity extends AppCompatActivity {
         tvAsk = findViewById(R.id.tvAsk);
 
         tvAsk.setOnClickListener(v -> {
-            Intent intent = new Intent(signInActivity.this, SignUp.class);
+            Intent intent = new Intent(signInActivity.this, SaveProfileActivity.class);
             startActivity(intent);
         });
 

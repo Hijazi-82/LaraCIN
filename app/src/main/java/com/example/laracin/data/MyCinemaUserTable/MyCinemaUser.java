@@ -4,6 +4,8 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.google.android.material.textfield.TextInputEditText;
+
 @Entity
 public class MyCinemaUser {
 
@@ -20,6 +22,8 @@ public class MyCinemaUser {
     public String portfolio;
     public int experienceYears; // عدد سنوات الخبرة
     public String skills; // المهارات (مثال: "مونتاج فيديو، إضاءة، Final Cut Pro")
+
+
 
 
     public long getKeyId() {
