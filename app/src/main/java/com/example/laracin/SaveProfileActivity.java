@@ -79,8 +79,6 @@ public class SaveProfileActivity extends AppCompatActivity {
 
         String fullName = etFullName.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
-    //    String email = etEmail2.getText().toString().trim();
-    //    String password = etPassword2.getText().toString().trim();
         String role = acRole.getText().toString().trim();
         String portfolio = etPortfolio.getText().toString().trim();
         String experienceYears = etExperienceYears.getText().toString().trim();
@@ -110,7 +108,7 @@ public class SaveProfileActivity extends AppCompatActivity {
         if (isValid) {
 
             // 🔥 تسجيل المستخدم في Firebase
-            auth.createUserWithEmailAndPassword(email, password)
+            auth.createUserWithEmailAndPassword(phone, fullName)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -120,8 +118,8 @@ public class SaveProfileActivity extends AppCompatActivity {
                                 // إنشاء المستخدم داخل Room
                                 MyCinemaUser myuser = new MyCinemaUser();
                                 myuser.setFullName(fullName);
-                                myuser.setEmail(email);
-                                myuser.setPassword(password);
+
+
                                 myuser.setPhone(phone);
                                 myuser.setRole("myuser");
 

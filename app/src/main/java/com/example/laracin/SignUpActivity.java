@@ -1,8 +1,11 @@
 package com.example.laracin;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -18,16 +21,16 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class SignUpActivity extends AppCompatActivity
 {
     private TextInputEditText  etEmail2, etPassword2;
+    private TextView tvSignIn;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        etEmail2 = findViewById(R.id.eiEmail2);
-        etPassword2 = findViewById(R.id.edPassword2);
-
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_sign_up);
@@ -35,6 +38,33 @@ public class SignUpActivity extends AppCompatActivity
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+
+        // Initialize Firebase Auth
+        auth = FirebaseAuth.getInstance();
+
+        // Initialize views
+        etEmail2 = findViewById(R.id.eiEmail2);
+        etPassword2 = findViewById(R.id.edPassword2);
+        tvSignIn = findViewById(R.id.tvSignIn);
+
+        // Set up button click listener
+        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validateAndInsertRecord();
+            }
+        });
+
+        // Set up sign-in text click listener
+        tvSignIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to sign-in activity
+                Intent intent = new Intent(SignUpActivity.this, signInActivity.class);
+                startActivity(intent);
+                finish();
+            }
         });
     }
     private boolean validateAndInsertRecord() {

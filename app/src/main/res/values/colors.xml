@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Base Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Modern Theme Colors -->
+    <color name="primary_background">#F8F9FA</color>
+    <color name="primary_text">#1A1A1A</color>
+    <color name="secondary_text">#6C757D</color>
+    <color name="input_text">#212529</color>
+    <color name="hint_color">#ADB5BD</color>
+    
+    <!-- Accent Colors -->
+    <color name="primary_accent">#6366F1</color>
+    <color name="primary_accent_variant">#4F46E5</color>
+    <color name="primary_accent_light">#818CF8</color>
+    
+    <!-- Status Colors -->
+    <color name="success">#10B981</color>
+    <color name="error">#EF4444</color>
+    <color name="warning">#F59E0B</color>
 </resources>
