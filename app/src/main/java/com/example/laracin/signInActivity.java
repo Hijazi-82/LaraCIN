@@ -25,11 +25,11 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class signInActivity extends AppCompatActivity {
 
-    private TextView tvFilmconnect;
-    private TextView tvSignin;
-    private TextView tvEmail;
+
+
+
     private EditText etEmail;
-    private TextView tvPassword;
+
     private EditText etPassword;
     private Button btnSignIn;
     private TextView tvAsk;
@@ -53,17 +53,17 @@ public class signInActivity extends AppCompatActivity {
             return insets;
         });
 
-        tvFilmconnect = findViewById(R.id.tvFilmconnect);
-        tvSignin = findViewById(R.id.tvSignin);
-        tvEmail = findViewById(R.id.tvEmail);
+
+
+
         etEmail = findViewById(R.id.etEmail);
-        tvPassword = findViewById(R.id.tvPassword);
+
         etPassword = findViewById(R.id.etPassword);
         btnSignIn = findViewById(R.id.btnSignIn);
         tvAsk = findViewById(R.id.tvAsk);
 
         tvAsk.setOnClickListener(v -> {
-            Intent intent = new Intent(signInActivity.this, SaveProfileActivity.class);
+            Intent intent = new Intent(signInActivity.this, SignUpActivity.class);
             startActivity(intent);
         });
 

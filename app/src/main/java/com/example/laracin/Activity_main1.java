@@ -36,7 +36,7 @@ public class Activity_main1 extends AppCompatActivity {
         super.onResume();
 
         adapteruser.clear();
-        adapteruser.addAll(AppDatabase.getDb(this).myCinemaUserQuery().getAllUsers());
+       // adapteruser.addAll(AppDatabase.getDb(this).myCinemaUserQuery().getAllUsers());
          adapteruser.notifyDataSetChanged();
     }
 

@@ -20,12 +20,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.laracin.data.AppDatabase;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemaUser;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -70,7 +67,7 @@ public class SaveProfileActivity extends AppCompatActivity {
         btnSignUp.setOnClickListener(v -> validateAndInsertRecord());
 
         tvSignIn.setOnClickListener(v -> {
-            Intent intent = new Intent(SaveProfileActivity.this, signInActivity.class);
+            Intent intent = new Intent(SaveProfileActivity.this, Activity_main1.class);
             startActivity(intent);
         });
     }
@@ -107,51 +104,24 @@ public class SaveProfileActivity extends AppCompatActivity {
         // ✅ إذا البيانات صحيحة
         if (isValid) {
 
-            // 🔥 تسجيل المستخدم في Firebase
-            auth.createUserWithEmailAndPassword(phone, fullName)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-
-                            if (task.isSuccessful()) {
-
-                                // إنشاء المستخدم داخل Room
-                                MyCinemaUser myuser = new MyCinemaUser();
-                                myuser.setFullName(fullName);
-
-
-                                myuser.setPhone(phone);
-                                myuser.setRole("myuser");
-
-                                AppDatabase.getDb(SaveProfileActivity.this)
-                                        .myCinemaUserQuery()
-                                        .insertUser(myuser);
-
-                                Toast.makeText(SaveProfileActivity.this,
-                                        "Signing up Succeeded",
-                                        Toast.LENGTH_SHORT).show();
-
-                                finish();
-
-                            } else {
-
-                                Toast.makeText(SaveProfileActivity.this,
-                                        "Signing up Failed",
-                                        Toast.LENGTH_SHORT).show();
-
-                            }
-                        }
-                    });
+          MyCinemaUser user1=new MyCinemaUser();
+          user1.setPhone(phone);
+          user1.setFullName(fullName);
+          user1.setRole(role);
+          user1.setPortfolio(portfolio);
+         // user1.setExperienceYears(experienceYears);
+          user1.setSkills(skills);
+          saveCinemaUser(user1);
         }
 
         return isValid;
     }
-    public void saveUser(MyCinemaUser user) {// الحصول على مرجع إلى عقدة "users" في قاعدة البيانات
+    public void saveCinemaUser(MyCinemaUser user) {// الحصول على مرجع إلى عقدة "users" في قاعدة البيانات
 
         // تهيئة Firebase Realtime Database    //مؤشر لقاعدة البيانات
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 // ‏مؤشر لجدول المستعملين
-        DatabaseReference usersRef = database.child("users");
+        DatabaseReference usersRef = database.child("CinemaProfiles");
         // إنشاء مفتاح فريد للمستخدم الجديد
         DatabaseReference newUserRef = usersRef.push();
         // تعيين معرف المستخدم في كائن MyUser
@@ -197,7 +167,7 @@ public class SaveProfileActivity extends AppCompatActivity {
 
             if (!name.isEmpty()) {
                 MyCinemaUser newUser = new MyCinemaUser();
-                saveUser(newUser);
+                saveCinemaUser(newUser);
 
 
                 // مسح حقول الإدخال

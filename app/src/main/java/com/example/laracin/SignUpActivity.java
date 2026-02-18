@@ -53,6 +53,9 @@ public class SignUpActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 validateAndInsertRecord();
+                Intent intent = new Intent(SignUpActivity.this, SaveProfileActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
 
@@ -91,14 +94,7 @@ public class SignUpActivity extends AppCompatActivity
             isValid = false;
         }
 
-        // التحقق من وجود الإيميل في Room
-        MyCinemaUser user =
-                AppDatabase.getDb(this).myCinemaUserQuery().getUserByEmail(email);
 
-        if (user != null) {
-            etEmail2.setError("Email already exists");
-            isValid = false;
-        }
 
         // ✅ إذا البيانات صحيحة
         if (isValid) {

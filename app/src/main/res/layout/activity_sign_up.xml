@@ -60,9 +60,7 @@
             app:hintTextColor="@color/hint_color"
             app:boxStrokeColor="@color/primary_accent"
             app:boxStrokeWidth="2dp"
-            app:boxCornerRadius="12dp"
-            app:startIconDrawable="@android:drawable/ic_dialog_email"
-            app:startIconTint="@color/primary_accent">
+           >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/eiEmail2"
@@ -85,11 +83,9 @@
             app:hintTextColor="@color/hint_color"
             app:boxStrokeColor="@color/primary_accent"
             app:boxStrokeWidth="2dp"
-            app:boxCornerRadius="12dp"
             app:endIconMode="password_toggle"
             app:endIconTint="@color/primary_accent"
-            app:startIconDrawable="@android:drawable/ic_lock_lock"
-            app:startIconTint="@color/primary_accent">
+            app:startIconDrawable="@android:drawable/ic_lock_lock">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edPassword2"

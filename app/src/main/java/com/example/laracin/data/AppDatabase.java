@@ -11,7 +11,7 @@ import com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery;
 
 
 
-@Database(entities = {MyCinemaUser.class,}, version =2)
+@Database(entities = {MyCinemaUser.class,}, version =3)
     public abstract class AppDatabase extends RoomDatabase {
         private static AppDatabase db;
         public abstract MyCinemaUserQuery myCinemaUserQuery();
