@@ -10,6 +10,7 @@ import android.util.Log;
 import android.util.Patterns;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ public class SaveProfileActivity extends AppCompatActivity {
     private AutoCompleteTextView acRole;
 
     private TextView tvSignIn;
+    private ImageButton imageButton2;
 
     private MyCinemaUserQuery dao;
 
@@ -63,6 +65,7 @@ public class SaveProfileActivity extends AppCompatActivity {
         etSkills = findViewById(R.id.etSkills);
         acRole = findViewById(R.id.acRole);
         tvSignIn = findViewById(R.id.tvSignIn);
+        imageButton2 = findViewById(R.id.imageButton2);
 
         btnSignUp.setOnClickListener(v -> validateAndInsertRecord());
 
@@ -80,6 +83,7 @@ public class SaveProfileActivity extends AppCompatActivity {
         String portfolio = etPortfolio.getText().toString().trim();
         String experienceYears = etExperienceYears.getText().toString().trim();
         String skills = etSkills.getText().toString().trim();
+
 
         boolean isValid = true;
 
