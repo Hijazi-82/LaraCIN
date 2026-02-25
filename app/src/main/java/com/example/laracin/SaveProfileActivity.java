@@ -83,6 +83,17 @@ public class SaveProfileActivity extends AppCompatActivity {
     private ImageButton imageButton2;
 
     // DAO للاستعلام من Room (معلن لكن غير مستخدم فعليا في الكود الحالي)
+    /**
+     * DAO
+     * طبقة الوصول لقاعدة البيانات في Room
+     * تحتوي دوال CRUD والاستعلامات الخاصة بجدول معين
+     *
+     * مثال
+     * MyCinemaUserQuery هو DAO لجدول MyCinemaUser
+     * - insertUser لاضافة مستخدم
+     * - getUserByEmail لجلب مستخدم بالايميل
+     * - login للتحقق من ايميل وباسورد
+     */
     private MyCinemaUserQuery dao;
 
     // FirebaseAuth (مهيأ لكن غير مستخدم فعليا في الكود الحالي)

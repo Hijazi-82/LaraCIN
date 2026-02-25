@@ -103,7 +103,16 @@ import com.google.firebase.auth.FirebaseAuth;
             /**
              * نص تسجيل الدخول
              * عند النقر ينقل المستخدم لشاشة signInActivity
-             */
+             * * onClick
+             *  * يتم استدعاؤها لما المستخدم ينقر على View مرتبط بالـ listener
+             *  *
+             *  * @param v الـ View اللي انكبس فعليا, ممكن يكون زر او TextView او اي عنصر واجهة
+             *  *
+             *  * الوظيفة داخل هذا الحدث
+             *  * - فتح شاشة تسجيل الدخول signInActivity
+             *  * - اغلاق شاشة SignUpActivity عشان زر الرجوع ما يرجع المستخدم للتسجيل
+             *  */
+
             tvSignIn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

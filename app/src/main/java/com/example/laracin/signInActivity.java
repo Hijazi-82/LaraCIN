@@ -151,7 +151,27 @@ public class signInActivity extends AppCompatActivity {
          * Firebase Login
          * يتم تنفيذ تسجيل الدخول فقط اذا كل الفحوصات السابقة سليمة
          * النتيجة النهائية تأتي داخل onComplete
-         */
+         * * تسجيل دخول Firebase
+         *  *
+         *  * الفكرة العامة
+         *  * - هذا البلوك لا ينفذ الا اذا isAllOK = true
+         *  *   يعني الفحوصات السابقة للايميل والباسورد نجحت حسب منطقك
+         *  *
+         *  * auth.signInWithEmailAndPassword
+         *  * - يرسل طلب تسجيل دخول الى Firebase Authentication بالايميل والباسورد
+         *  * - العملية غير فورية, يعني بتشتغل بشكل async
+         *  *
+         *  * addOnCompleteListener
+         *  * - بنضيف listener عشان نستقبل نتيجة الطلب لما يخلص
+         *  * - onComplete بتنادى مرة واحدة بعد ما Firebase يرجع نتيجة نجاح او فشل
+         *  *
+         *  * task
+         *  * - يمثل نتيجة عملية تسجيل الدخول
+         *  * - task.isSuccessful يعني تسجيل الدخول تم بنجاح
+         *  */
+
+
+
         if (isAllOK) {
 
             auth.signInWithEmailAndPassword(email, password)
