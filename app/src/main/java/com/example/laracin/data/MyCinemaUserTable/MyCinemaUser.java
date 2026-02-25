@@ -7,24 +7,70 @@ import androidx.room.PrimaryKey;
 import com.google.android.material.textfield.TextInputEditText;
 
 @Entity
+
+/**
+ * MyCinemaUser
+ * موديل يمثل مستخدم التطبيق, ويستخدم ك entity داخل Room
+ *
+ * الهدف
+ * تخزين معلومات المستخدم الاساسية, ومعلومات البروفايل المتعلقة بالشغل داخل قاعدة بيانات محلية
+ *
+ * الحقول
+ * keyId
+ * - مفتاح اساسي داخل Room
+ * - autoGenerate يعني Room بتولد رقم تلقائي لكل سجل جديد
+ *
+ * fullName
+ * - الاسم الكامل للمستخدم
+ * - مخزن في الجدول باسم full_Name عبر ColumnInfo
+ *
+ * email و password
+ * - بيانات تسجيل الدخول
+ *
+ * phone
+ * - رقم هاتف المستخدم
+ *
+ * role
+ * - دور المستخدم او تخصصه, مثال مصور, مونتير, ممثل, الخ
+ *
+ * portfolio
+ * - رابط او وصف للبورتفوليو
+ *
+ * experienceYears
+ * - عدد سنوات الخبرة, رقم صحيح
+ *
+ * skills
+ * - نص يمثل مهارات المستخدم, مثال مونتاج, اضاءة, Final Cut Pro
+ *
+ * ملاحظة
+ * الكلاس يحتوي getters و setters لكل حقل, و toString لطباعة محتوى الكائن للتشخيص
+ */
 public class MyCinemaUser {
 
+    // Primary key لقاعدة Room, يتم توليده تلقائيا
     @PrimaryKey(autoGenerate = true)
     public long keyId;
 
+    // الاسم الكامل, اسم العمود في الجدول full_Name
     @ColumnInfo(name = "full_Name")
     public String fullName;
 
+    // بيانات الحساب
     public String email;
     public String password;
+
+    // بيانات التواصل والبروفايل
     public String phone;
     public String role;
     public String portfolio;
-    public int experienceYears; // عدد سنوات الخبرة
-    public String skills; // المهارات (مثال: "مونتاج فيديو، إضاءة، Final Cut Pro")
 
+    // عدد سنوات الخبرة
+    public int experienceYears;
 
+    // المهارات كنص
+    public String skills;
 
+    // getters و setters
 
     public long getKeyId() {
         return keyId;
@@ -98,6 +144,10 @@ public class MyCinemaUser {
         this.skills = skills;
     }
 
+    /**
+     * toString
+     * مفيد للتجربة والتشخيص, يعرض كل الحقول كنص واحد
+     */
     @Override
     public String toString() {
         return "MyCinemaUser{" +
@@ -112,5 +162,4 @@ public class MyCinemaUser {
                 ", skills='" + skills + '\'' +
                 '}';
     }
-
 }

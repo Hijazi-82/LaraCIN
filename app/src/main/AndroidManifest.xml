@@ -1,17 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  AndroidManifest.xml
+
+  هذا الملف بيعرف للتطبيق
+  1 الصلاحيات المطلوبة
+  2 ال Activities الموجودة بالتطبيق
+  3 اي Activity هي نقطة البداية LAUNCHER
+  4 خصائص عامة للتطبيق داخل <application>
+-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="ExtraText" >
+    tools:ignore="ExtraText">
 
+    <!--
+      Permissions
+
+      INTERNET
+      للسماح بالاتصال بالانترنت, ضروري مع Firebase وغيره
+      ملاحظة, عندك مكرر مرتين, واحد منهم زائد
+
+      READ_MEDIA_IMAGES و READ_MEDIA_VIDEO
+      صلاحيات اندرويد 13+ لقراءة صور وفيديو من الجهاز
+
+      READ_EXTERNAL_STORAGE
+      صلاحية قديمة لقراءة ملفات من التخزين الخارجي, وعندك مكررة كمان
+      عادة تستخدمها للأجهزة الأقدم من اندرويد 13
+    -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.INTERNET" />
+
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         tools:ignore="ExtraText" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+    <!--
+      Application
+
+      allowBackup, dataExtractionRules, fullBackupContent
+      اعدادات النسخ الاحتياطي واستخراج البيانات
+
+      icon, roundIcon, label
+      اعدادات اسم وايقونات التطبيق
+
+      supportsRtl
+      دعم اتجاه RTL للغات مثل العربي
+
+      theme
+      الثيم الافتراضي للتطبيق
+    -->
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -20,31 +60,57 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.LaraCIN" >
+        android:theme="@style/Theme.LaraCIN">
+
+        <!--
+          Activities
+
+          exported
+          بتحدد اذا activity مسموح تنفتح من خارج التطبيق
+          القاعدة العامة, خليها false الا اذا لازم تنفتح من intent خارجي
+
+          ملاحظة
+          عندك SplashScreen هي LAUNCHER, يعني اول شاشة تفتح لما تشغل التطبيق
+        -->
+
         <activity
             android:name=".SignUpActivity"
             android:exported="false" />
+
         <activity
             android:name=".Activity_main1"
             android:exported="false" />
+
         <activity
             android:name=".SaveProfileActivity"
             android:exported="false" />
+
         <activity
             android:name=".signInActivity"
             android:exported="false" />
+
+        <!--
+          SplashScreen
+          اول شاشة بالتطبيق, عليها intent-filter MAIN و LAUNCHER
+        -->
         <activity
             android:name=".SplashScreen"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
+          MainActivity2
+          شاشة ثانية, exported=true يعني ممكن تنفتح من برا
+          اذا ما عندك سبب, خليها false
+        -->
         <activity
             android:name=".MainActivity2"
             android:exported="true" />
+
     </application>
 
 </manifest>

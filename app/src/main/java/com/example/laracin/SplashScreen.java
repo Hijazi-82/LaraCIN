@@ -12,34 +12,43 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+
 public class SplashScreen extends AppCompatActivity {
 
+    // شاشة سبلاش, بتظهر لمدة 3 ثواني وبعدها بتنقل المستخدم لشاشة تسجيل الدخول
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_splash_screen);
-//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-//            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-//            return insets;
-//        });
 
-         Thread thread = new Thread(){
+        // تفعيل عرض edge to edge
+        EdgeToEdge.enable(this);
+
+        // ربط الواجهة الخاصة بالسبلاش
+        setContentView(R.layout.activity_splash_screen);
+
+        /*
+          Thread لعمل تأخير 3 ثواني
+          بعدها يتم فتح signInActivity
+        */
+        Thread thread = new Thread() {
             @Override
             public void run() {
                 try {
+                    // مدة عرض السبلاش
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
+                    // معالجة حالة انقطاع الثريد
                     e.printStackTrace();
-                }
-                finally {
+                } finally {
+                    // الانتقال للشاشة التالية
                     Intent intent = new Intent(SplashScreen.this, signInActivity.class);
                     startActivity(intent);
                 }
             }
         };
+
+        // تشغيل الثريد
         thread.start();
     }
 }

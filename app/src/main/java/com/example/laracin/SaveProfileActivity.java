@@ -28,38 +28,82 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
+import android.util.Patterns;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.activity.EdgeToEdge;
+
+import com.example.laracin.data.AppDatabase;
+import com.example.laracin.data.MyCinemaUserTable.MyCinemaUser;
+import com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnFailureListener;
+
+/**
+ * SaveProfileActivity
+ * شاشة استكمال وحفظ ملف المستخدم بعد التسجيل
+ *
+ * المسؤوليات
+ * 1 قراءة بيانات البروفايل من الواجهة, مثل الاسم, الهاتف, الدور, بورتفوليو, خبرة, مهارات
+ * 2 التحقق من صحة بعض المدخلات الاساسية
+ * 3 إنشاء كائن MyCinemaUser وتجهيز حقول البروفايل
+ * 4 حفظ بيانات البروفايل داخل Firebase Realtime Database تحت عقدة CinemaProfiles
+ * 5 عرض رسائل نجاح او فشل للمستخدم
+ */
 public class SaveProfileActivity extends AppCompatActivity {
 
+    // زر حفظ بيانات البروفايل
     private Button btnSignUp;
 
-    private TextInputEditText etFullName,  etPhone,
-            etPortfolio, etExperienceYears, etSkills;
+    // حقول إدخال بيانات البروفايل
+    private TextInputEditText etFullName, etPhone, etPortfolio, etExperienceYears, etSkills;
 
+    // اختيار الدور من قائمة
     private AutoCompleteTextView acRole;
 
+    // نص للتنقل للشاشة الرئيسية
     private TextView tvSignIn;
+
+    // زر صورة بالواجهة, موجود بالتصميم (غير مستخدم بالكود الحالي)
     private ImageButton imageButton2;
 
+    // DAO للاستعلام من Room (معلن لكن غير مستخدم فعليا في الكود الحالي)
     private MyCinemaUserQuery dao;
 
-    // 🔥 Firebase
+    // FirebaseAuth (مهيأ لكن غير مستخدم فعليا في الكود الحالي)
     private FirebaseAuth auth;
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // تفعيل edge to edge وتحميل واجهة الشاشة
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_save_profile);
 
-        // 🔥 تهيئة Firebase
+        // تهيئة FirebaseAuth
         auth = FirebaseAuth.getInstance();
 
         // ربط عناصر الواجهة
         btnSignUp = findViewById(R.id.btSignUp);
         etFullName = findViewById(R.id.etFullname);
         etPhone = findViewById(R.id.etPhone);
-
         etPortfolio = findViewById(R.id.etPortfolio);
         etExperienceYears = findViewById(R.id.etExperienceYears);
         etSkills = findViewById(R.id.etSkills);
@@ -67,16 +111,39 @@ public class SaveProfileActivity extends AppCompatActivity {
         tvSignIn = findViewById(R.id.tvSignIn);
         imageButton2 = findViewById(R.id.imageButton2);
 
+        /**
+         * زر الحفظ
+         * عند النقر, يتم التحقق من المدخلات, ثم إنشاء كائن المستخدم وحفظه في Firebase Realtime Database
+         */
         btnSignUp.setOnClickListener(v -> validateAndInsertRecord());
 
+        /**
+         * tvSignIn
+         * حسب الكود الحالي, ينقل للشاشة الرئيسية Activity_main1
+         */
         tvSignIn.setOnClickListener(v -> {
             Intent intent = new Intent(SaveProfileActivity.this, Activity_main1.class);
             startActivity(intent);
         });
     }
 
+    /**
+     * validateAndInsertRecord
+     *
+     * الهدف
+     * قراءة بيانات البروفايل من الحقول, التحقق من الاساسيات, ثم تجهيز كائن MyCinemaUser وحفظه
+     *
+     * ملاحظات عن التحقق الحالي
+     * - يتحقق من ان الاسم غير فارغ
+     * - يتحقق من رقم الهاتف باستخدام Patterns.PHONE
+     * - يوجد سطر "التحقق من وجود الإيميل في Room" لكنه فعليا يستعلم بالايميل عبر phone وهذا غير متناسق بالكلام
+     *   والنتيجة user لا تستخدم بعدين, يعني التحقق هذا حاليا بلا تأثير
+     *
+     * @return true اذا التحقق الاساسي نجح, false اذا في اخطاء
+     */
     private boolean validateAndInsertRecord() {
 
+        // قراءة المدخلات
         String fullName = etFullName.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
         String role = acRole.getText().toString().trim();
@@ -84,79 +151,120 @@ public class SaveProfileActivity extends AppCompatActivity {
         String experienceYears = etExperienceYears.getText().toString().trim();
         String skills = etSkills.getText().toString().trim();
 
-
         boolean isValid = true;
 
+        // تحقق الاسم
         if (TextUtils.isEmpty(fullName)) {
             etFullName.setError("Full name is required");
             isValid = false;
         }
 
+        // تحقق الهاتف
         if (!Patterns.PHONE.matcher(phone).matches()) {
             etPhone.setError("Invalid phone number");
             isValid = false;
         }
 
-
-
-        // التحقق من وجود الإيميل في Room
+        /**
+         * استعلام من Room
+         * حسب اسم الدالة getUserByEmail المفروض يدخل ايميل
+         * لكن الكود يرسل phone, فهنا في عدم تطابق بالتسمية والاستخدام
+         * النتيجة user لا تستخدم لاحقا
+         */
         MyCinemaUser user =
                 AppDatabase.getDb(this).myCinemaUserQuery().getUserByEmail(phone);
 
-
-
-        // ✅ إذا البيانات صحيحة
+        // اذا البيانات سليمة, جهز كائن المستخدم واحفظه
         if (isValid) {
+            MyCinemaUser user1 = new MyCinemaUser();
+            user1.setPhone(phone);
+            user1.setFullName(fullName);
+            user1.setRole(role);
+            user1.setPortfolio(portfolio);
 
-          MyCinemaUser user1=new MyCinemaUser();
-          user1.setPhone(phone);
-          user1.setFullName(fullName);
-          user1.setRole(role);
-          user1.setPortfolio(portfolio);
-         // user1.setExperienceYears(experienceYears);
-          user1.setSkills(skills);
-          saveCinemaUser(user1);
+            // تجربة خبرة السنوات موجودة لكن معلقة
+            // user1.setExperienceYears(experienceYears);
+
+            user1.setSkills(skills);
+
+            // حفظ البروفايل على Firebase Realtime Database
+            saveCinemaUser(user1);
         }
 
         return isValid;
     }
-    public void saveCinemaUser(MyCinemaUser user) {// الحصول على مرجع إلى عقدة "users" في قاعدة البيانات
 
-        // تهيئة Firebase Realtime Database    //مؤشر لقاعدة البيانات
+    /**
+     * saveCinemaUser
+     *
+     * الهدف
+     * حفظ كائن MyCinemaUser داخل Firebase Realtime Database
+     *
+     * خطوات العمل
+     * 1 الحصول على مرجع قاعدة البيانات
+     * 2 تحديد العقدة CinemaProfiles لتخزين بروفايلات المستخدمين
+     * 3 إنشاء سجل جديد بمفتاح فريد باستخدام push
+     * 4 تخزين بيانات المستخدم عبر setValue
+     * 5 التعامل مع نجاح وفشل العملية عبر listeners
+     *
+     * ملاحظة مهمة عن الكود الحالي
+     * - الكود يحاول تحويل key الناتج من push الى Long عبر Long.parseLong
+     *   عادة مفاتيح push ليست ارقام فقط, ممكن تكون حروف وارقام, وهذا ممكن يسبب خطأ
+     * - داخل هذه الدالة تم وضع btnSignUp.setOnClickListener مرة ثانية, وهذا تكرار غير منطقي
+     *   وبيعمل ان الزر يتغير سلوكه بعد الاستدعاء, وبيعمل recursion محتمل عبر saveCinemaUser
+     *
+     * @param user كائن المستخدم المراد حفظه
+     */
+    public void saveCinemaUser(MyCinemaUser user) {
+
+        // مرجع قاعدة البيانات
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-// ‏مؤشر لجدول المستعملين
+
+        // مرجع عقدة البروفايلات
         DatabaseReference usersRef = database.child("CinemaProfiles");
-        // إنشاء مفتاح فريد للمستخدم الجديد
+
+        // إنشاء سجل جديد بمفتاح فريد
         DatabaseReference newUserRef = usersRef.push();
-        // تعيين معرف المستخدم في كائن MyUser
+
+        // تعيين keyId داخل كائن المستخدم
         user.setKeyId(Long.parseLong(newUserRef.getKey()));
-        // حفظ بيانات المستخدم في قاعدة البيانات
-        //اضافة كائن "لمجموعة" المستعملين ومعالج حدث لفحص نجاح المطلوب
-        // حدث لفحص هل تم المطلوب من قاعدة البيانات معالم
+
+        // حفظ بيانات المستخدم
         newUserRef.setValue(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Toast.makeText(SaveProfileActivity.this, "Succeeded to add User",  Toast.LENGTH_SHORT).show();
+
+                        Toast.makeText(SaveProfileActivity.this,
+                                "Succeeded to add User",
+                                Toast.LENGTH_SHORT).show();
+
+                        // اغلاق الشاشة بعد النجاح
                         finish();
 
-
-
-
-                        // تم حفظ البيانات بنجاح
+                        // سجل للنجاح
                         Log.d(TAG, "تم حفظ المستخدم بنجاح: " + user.getKeyId());
-                        // تحديث واجهة المستخدم أو تنفيذ إجراءات أخرى
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        // معالجة الأخطاء
+
+                        // سجل للفشل
                         Log.e(TAG, "خطأ في حفظ المستخدم: " + e.getMessage(), e);
-                        Toast.makeText(SaveProfileActivity.this, "Failed to add User", Toast.LENGTH_SHORT).show();
-                        // عرض رسالة خطأ للمستخدم
+
+                        Toast.makeText(SaveProfileActivity.this,
+                                "Failed to add User",
+                                Toast.LENGTH_SHORT).show();
                     }
                 });
+
+        /**
+         * ملاحظة
+         * هذا listener موجود داخل saveCinemaUser في الكود الاصلي
+         * وهو يعيد تعيين btnSignUp click ويستدعي saveCinemaUser مرة ثانية
+         * هذا سلوك غير معتاد وقد يسبب تكرار حفظ او مشاكل منطقية
+         */
         btnSignUp.setOnClickListener(v -> {
             String name = etFullName.getText().toString();
             String phone = etPhone.getText().toString();
@@ -165,25 +273,17 @@ public class SaveProfileActivity extends AppCompatActivity {
             String experienceYears = etExperienceYears.getText().toString();
             String skills = etSkills.getText().toString();
 
-
-
-
-
             if (!name.isEmpty()) {
                 MyCinemaUser newUser = new MyCinemaUser();
+
+                // استدعاء الحفظ مرة ثانية حسب الكود الحالي
                 saveCinemaUser(newUser);
 
-
-                // مسح حقول الإدخال
+                // مسح حقل الاسم فقط حسب الكود الحالي
                 etFullName.setText("");
             } else {
                 Log.w(TAG, "الرجاء إدخال الاسم والبريد الإلكتروني.");
             }
         });
-
-
     }
-
 }
-
-
