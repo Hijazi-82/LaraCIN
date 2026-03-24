@@ -147,6 +147,12 @@ public class SaveProfileActivity extends AppCompatActivity {
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // تفعيل edge to edge وتحميل واجهة الشاشة
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_save_profile);
+
         requestReadMediaImagesPermission = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
             if (isGranted) {
                 Log.d(TAG, "READ_MEDIA_IMAGES permission granted");
@@ -178,11 +184,7 @@ public class SaveProfileActivity extends AppCompatActivity {
 
 
 
-        super.onCreate(savedInstanceState);
 
-        // تفعيل edge to edge وتحميل واجهة الشاشة
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_save_profile);
 
         // تهيئة FirebaseAuth
         auth = FirebaseAuth.getInstance();

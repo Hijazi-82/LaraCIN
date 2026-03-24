@@ -6,6 +6,8 @@ import androidx.room.PrimaryKey;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.Serializable;
+
 @Entity
 
 /**
@@ -45,7 +47,7 @@ import com.google.android.material.textfield.TextInputEditText;
  * ملاحظة
  * الكلاس يحتوي getters و setters لكل حقل, و toString لطباعة محتوى الكائن للتشخيص
  */
-public class MyCinemaUser {
+public class MyCinemaUser implements Serializable {
 
     // Primary key لقاعدة Room, يتم توليده تلقائيا
     @PrimaryKey(autoGenerate = true)

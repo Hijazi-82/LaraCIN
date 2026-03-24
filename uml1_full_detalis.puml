@@ -1,0 +1,547 @@
+@startuml
+class com.example.laracin.Activity_main1 {
+- ListView listusers
+- MyCinemUserAdapter adapteruser
+# void onCreate(Bundle)
+# void onResume()
+}
+note top of com.example.laracin.Activity_main1
+
+ * Activity_main1
+ * شاشة تعرض ListView للمستخدمين باستخدام Adapter مخصص
+ *
+ * المسؤوليات
+ * 1 تهيئة الواجهة activity_main1
+ * 2 ربط ListView بالـ Adapter
+ * 3 عند الرجوع للشاشة onResume, تحديث محتوى القائمة حسب البيانات
+ *
+ * ملاحظة
+ * جلب المستخدمين من Room موجود لكنه معلق حاليا, لذلك القائمة لن تمتلئ ببيانات
+ 
+end note
+
+note left of com.example.laracin.Activity_main1::listusers
+ ListView لعرض المستخدمين
+end note
+note right of com.example.laracin.Activity_main1::adapteruser
+ Adapter مخصص لعرض عناصر المستخدمين داخل ListView
+end note
+
+note left of com.example.laracin.Activity_main1::onResume()
+
+     * onResume
+     * يتم استدعاؤها كل مرة الشاشة ترجع للواجهة
+     *
+     * اللي بيصير حاليا
+     * 1 تفريغ بيانات الـ adapter
+     * 2 تحديث الواجهة notifyDataSetChanged
+     *
+     * ملاحظة
+     * سطر جلب البيانات من Room معلق
+     * لو بدك القائمة تمتلئ لازم تفك التعليق عن addAll وتجيب البيانات
+     
+end note
+
+class com.example.laracin.MainActivity2 {
+- TextView tvSearchMovies
+- Button btnSearchMovies
+# void onCreate(Bundle)
+}
+note top of com.example.laracin.MainActivity2
+
+ * MainActivity2
+ * شاشة رئيسية او شاشة قائمة خيارات, فيها عناصر للبحث عن افلام, اضافة فيلم, وعرض قائمتي
+ *
+ * اللي بيصير حاليا
+ * 1 تحميل layout الخاص بالشاشة activity_main2
+ * 2 تفعيل edge to edge وضبط padding حسب system bars
+ * 3 ربط عناصر الواجهة بالمتغيرات عبر findViewById
+ *
+ * ملاحظة
+ * الكلاس حاليا ما فيه اي منطق او listeners للازرار, بس تجهيز وربط عناصر
+ 
+end note
+
+note left of com.example.laracin.MainActivity2::tvSearchMovies
+ نصوص بالواجهة
+end note
+note right of com.example.laracin.MainActivity2::btnSearchMovies
+ ازرار بالواجهة
+end note
+
+
+class com.example.laracin.data.MyCinemaUserTable.MyCinemaUser {
++ long keyId
++ String fullName
++ String email
++ String password
++ String phone
++ String role
++ String portfolio
++ int experienceYears
++ String skills
++ long getKeyId()
++ void setKeyId(long)
++ String getFullName()
++ void setFullName(String)
++ String getEmail()
++ void setEmail(String)
++ String getPassword()
++ void setPassword(String)
++ String getPhone()
++ void setPhone(String)
++ String getRole()
++ void setRole(String)
++ String getPortfolio()
++ void setPortfolio(String)
++ int getExperienceYears()
++ void setExperienceYears(int)
++ String getSkills()
++ void setSkills(String)
++ String toString()
+}
+note left of com.example.laracin.data.MyCinemaUserTable.MyCinemaUser::keyId
+ Primary key لقاعدة Room, يتم توليده تلقائيا
+end note
+note right of com.example.laracin.data.MyCinemaUserTable.MyCinemaUser::fullName
+ الاسم الكامل, اسم العمود في الجدول full_Name
+end note
+note left of com.example.laracin.data.MyCinemaUserTable.MyCinemaUser::email
+ بيانات الحساب
+end note
+note right of com.example.laracin.data.MyCinemaUserTable.MyCinemaUser::phone
+ بيانات التواصل والبروفايل
+end note
+note left of com.example.laracin.data.MyCinemaUserTable.MyCinemaUser::experienceYears
+ عدد سنوات الخبرة
+end note
+note right of com.example.laracin.data.MyCinemaUserTable.MyCinemaUser::skills
+ المهارات كنص
+end note
+
+note left of com.example.laracin.data.MyCinemaUserTable.MyCinemaUser::toString()
+
+     * toString
+     * مفيد للتجربة والتشخيص, يعرض كل الحقول كنص واحد
+     
+end note
+
+class com.example.laracin.signInActivity {
+- EditText etEmail
+- EditText etPassword
+- Button btnSignIn
+- TextView tvAsk
+- FirebaseAuth auth
+# void onCreate(Bundle)
+- boolean validateInputs()
+}
+note top of com.example.laracin.signInActivity
+
+ * signInActivity
+ * شاشة تسجيل الدخول
+ *
+ * المسؤوليات
+ * 1 قراءة الايميل والباسورد من الواجهة
+ * 2 التحقق من صحة المدخلات
+ * 3 التحقق من بيانات المستخدم محليا من Room
+ * 4 تسجيل الدخول عبر Firebase Authentication
+ * 5 عند النجاح, نقل المستخدم للشاشة الرئيسية
+ 
+end note
+
+note left of com.example.laracin.signInActivity::etEmail
+ حقول الادخال
+end note
+note right of com.example.laracin.signInActivity::btnSignIn
+ زر تسجيل الدخول
+end note
+note left of com.example.laracin.signInActivity::tvAsk
+ نص ينقل المستخدم لشاشة التسجيل
+end note
+note right of com.example.laracin.signInActivity::auth
+ FirebaseAuth لعملية تسجيل الدخول
+end note
+
+note left of com.example.laracin.signInActivity::validateInputs()
+
+     * validateInputs
+     *
+     * الهدف
+     * التحقق من صحة الايميل والباسورد, ثم التأكد من وجود المستخدم في Room,
+     * ثم تسجيل الدخول على Firebase
+     *
+     * خطوات العمل
+     * 1 قراءة الايميل والباسورد من الحقول
+     * 2 فحص صيغة الايميل وطول الباسورد
+     * 3 جلب المستخدم من Room بواسطة الايميل
+     * 4 مقارنة كلمة المرور المدخلة مع المخزنة في Room
+     * 5 اذا كل شيء صحيح, تنفيذ signInWithEmailAndPassword على Firebase
+     * 6 داخل onComplete
+     *    - اذا نجاح: Toast نجاح ثم الانتقال للشاشة الرئيسية Activity_main1
+     *    - اذا فشل: Toast فشل ثم عرض رسالة الخطأ على حقل الايميل
+     *
+     * ملاحظة
+     * isAllOK يعبر عن صحة المدخلات + نجاح تحقق Room قبل محاولة Firebase
+     *
+     * @return true اذا كل فحوصات التحقق نجحت قبل Firebase, false اذا في اخطاء
+     
+end note
+
+class com.example.laracin.SplashScreen {
+# void onCreate(Bundle)
+}
+note left of com.example.laracin.SplashScreen::onCreate(Bundle)
+ شاشة سبلاش, بتظهر لمدة 3 ثواني وبعدها بتنقل المستخدم لشاشة تسجيل الدخول
+end note
+
+class com.example.laracin.SignUpActivity {
+- TextInputEditText etEmail2
+- TextView tvSignIn
+- FirebaseAuth auth
+# void onCreate(Bundle)
+- boolean validateAndInsertRecord()
+}
+note top of com.example.laracin.SignUpActivity
+
+ * SignUpActivity
+ * شاشة تسجيل حساب جديد
+ *
+         * المسؤوليات
+ * 1 قراءة الايميل والباسورد من الواجهة
+ * 2 التحقق من صحة المدخلات
+ * 3 إنشاء مستخدم جديد على Firebase Authentication
+ * 4 عند النجاح, تخزين سجل المستخدم محليا داخل Room Database
+ * 5 عرض رسائل نجاح او فشل للمستخدم
+ 
+end note
+
+note left of com.example.laracin.SignUpActivity::etEmail2
+
+         * etEmail2 و etPassword2
+         * حقول ادخال الايميل والباسورد في واجهة التسجيل
+         
+end note
+note right of com.example.laracin.SignUpActivity::tvSignIn
+
+         * tvSignIn
+         * TextView قابل للنقر, ينقل المستخدم لشاشة تسجيل الدخول بدل التسجيل
+         
+end note
+note left of com.example.laracin.SignUpActivity::auth
+
+         * auth
+         * كائن FirebaseAuth المسؤول عن عمليات التسجيل على Firebase
+         
+end note
+
+note left of com.example.laracin.SignUpActivity::validateAndInsertRecord()
+
+         * validateAndInsertRecord
+         *
+         * الهدف
+         * التحقق من صحة المدخلات ثم تسجيل المستخدم في Firebase, وبعدها تخزينه في Room عند النجاح
+         *
+         * خطوات العمل
+         * 1 قراءة الايميل والباسورد من TextInputEditText
+         * 2 فحص الايميل فاضي ولا لا
+         * 3 فحص صيغة الايميل عبر Patterns.EMAIL_ADDRESS
+         * 4 فحص طول الباسورد (اقل من 6 يعتبر غير صالح)
+         * 5 اذا المدخلات سليمة, يبدأ createUserWithEmailAndPassword
+         * 6 داخل onComplete
+         *    - اذا نجاح: ينشئ MyCinemaUser ويحفظه في Room, ويعرض Toast نجاح
+         *    - اذا فشل: يعرض Toast فشل, ويحط رسالة الخطأ على حقل الايميل
+         *
+         * ملاحظة
+         * القيمة الراجعة من الدالة ترجع صحة المدخلات فقط
+         * نجاح التسجيل على Firebase يتحدد لاحقا داخل onComplete
+         *
+         * @return true اذا المدخلات سليمة, false اذا في اخطاء تحقق
+         
+end note
+
+class com.example.laracin.data.MyCinemaUserTable.MyCinemUserAdapter {
+- int itemLayout
++ View getView(int,View,ViewGroup)
+}
+note top of com.example.laracin.data.MyCinemaUserTable.MyCinemUserAdapter
+
+ * MyCinemUserAdapter
+ * Adapter مخصص لعرض عناصر MyCinemaUser داخل ListView
+ *
+ * الفكرة
+ * - الكلاس بيمد ArrayAdapter عشان يقدر يعرض قائمة من MyCinemaUser
+ * - getView مسؤولة عن بناء او إعادة استخدام view لكل صف داخل القائمة
+ * - يتم تعبئة عناصر الصف مثل الاسم والايميل والدور داخل TextViews
+ *
+ * itemLayout
+ * - رقم ال layout resource للعنصر الواحد داخل القائمة, مثال actor_item_layout
+ 
+end note
+
+note left of com.example.laracin.data.MyCinemaUserTable.MyCinemUserAdapter::itemLayout
+ layout الخاص بكل item داخل القائمة
+end note
+
+note left of com.example.laracin.data.MyCinemaUserTable.MyCinemUserAdapter::getView(int,View,ViewGroup)
+
+     * getView
+     * يتم استدعاؤها لكل عنصر في القائمة لتجهيزه وعرضه داخل ListView
+     *
+     * @param position موقع العنصر بالقائمة
+     * @param convertView view جاهزة لاعادة الاستخدام, اذا null يتم عمل inflate جديدة
+     * @param parent الـ ListView نفسه
+     * @return view جاهزة للعرض
+     
+end note
+
+interface com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery {
+~ void insertUser(MyCinemaUser)
+~ void updateUser(MyCinemaUser)
+~ void deleteUser(MyCinemaUser)
+~ List<MyCinemaUser> getAllUsers()
+~ MyCinemaUser getUserById(long)
+~ MyCinemaUser getUserByEmail(String)
+~ MyCinemaUser login(String,String)
+}
+note top of com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery
+
+ * MyCinemaUserQuery
+ * DAO خاص بجدول MyCinemaUser داخل Room
+ *
+ * الهدف
+ * توفير عمليات CRUD واستعلامات جاهزة للتعامل مع بيانات المستخدمين محليا
+ *
+ * CRUD
+ * - Insert اضافة مستخدم جديد
+ * - Update تعديل بيانات مستخدم موجود
+ * - Delete حذف مستخدم
+ *
+ * Queries
+ * - getAllUsers جلب كل المستخدمين
+ * - getUserById جلب مستخدم حسب المفتاح keyId
+ * - getUserByEmail جلب مستخدم حسب الايميل
+ * - login جلب مستخدم مطابق لايميل وباسورد, لاستخدام تسجيل الدخول محليا
+ 
+end note
+
+note left of com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery::insertUser(MyCinemaUser)
+
+     * insertUser
+     * اضافة سجل مستخدم جديد داخل قاعدة البيانات
+     *
+     * @param user كائن MyCinemaUser المراد ادخاله
+     
+end note
+note right of com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery::updateUser(MyCinemaUser)
+
+     * updateUser
+     * تحديث بيانات مستخدم موجود, لازم keyId يكون موجود عشان Room يعرف اي سجل يحدث
+     *
+     * @param user كائن المستخدم بعد التعديل
+     
+end note
+note left of com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery::deleteUser(MyCinemaUser)
+
+     * deleteUser
+     * حذف مستخدم من قاعدة البيانات
+     *
+     * @param user كائن المستخدم المراد حذفه
+     
+end note
+note right of com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery::getAllUsers()
+
+     * getAllUsers
+     * جلب كل المستخدمين المخزنين في جدول MyCinemaUser
+     *
+     * @return قائمة بجميع المستخدمين
+     
+end note
+note left of com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery::getUserById(long)
+
+     * getUserById
+     * جلب مستخدم واحد حسب keyId
+     *
+     * @param id المفتاح الاساسي للمستخدم
+     * @return المستخدم اذا موجود, او null اذا مش موجود
+     
+end note
+note right of com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery::getUserByEmail(String)
+
+     * getUserByEmail
+     * جلب مستخدم واحد حسب البريد الالكتروني
+     *
+     * @param email ايميل المستخدم
+     * @return المستخدم اذا موجود, او null اذا مش موجود
+     
+end note
+note left of com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery::login(String,String)
+
+     * login
+     * استعلام تسجيل دخول محلي عبر مطابقة الايميل والباسورد
+     *
+     * ملاحظة
+     * هذا استعلام محلي فقط على Room, مش Firebase
+     *
+     * @param email ايميل المستخدم
+     * @param password كلمة المرور
+     * @return المستخدم اذا كانت البيانات مطابقة, او null اذا فشلت المطابقة
+     
+end note
+
+class com.example.laracin.data.mycinemaTable.cinema {
+}
+abstract class com.example.laracin.data.AppDatabase {
+- {static} AppDatabase db
++ {abstract}MyCinemaUserQuery myCinemaUserQuery()
++ {static} AppDatabase getDb(Context)
+}
+note top of com.example.laracin.data.AppDatabase
+
+ * AppDatabase
+ * قاعدة بيانات Room الرئيسية للتطبيق
+ *
+ * الفكرة
+ * - تعريف ال entities اللي بدها تنخزن محليا, هون MyCinemaUser
+ * - تعريف ال DAO اللي بنستخدمه للاستعلام والادخال, هون MyCinemaUserQuery
+ * - توفير Singleton instance من قاعدة البيانات عبر getDb عشان ما تنبني اكثر من مرة
+ *
+ * ملاحظات مهمة عن الاعدادات الحالية
+ * - version = 3 رقم نسخة قاعدة البيانات, لازم يزيد لما يتغير ال schema
+ * - fallbackToDestructiveMigration يعني اذا صار تغيير بالنسخة بدون migration
+ *   بيحذف البيانات القديمة وبعيد بناء الجداول
+ * - allowMainThreadQueries يسمح باستعلامات على ال main thread, سهل للتجربة
+ *   بس مش مفضل لتطبيق فعلي لانه ممكن يعلق الواجهة
+ 
+end note
+
+note left of com.example.laracin.data.AppDatabase::db
+ Singleton instance
+end note
+
+note left of com.example.laracin.data.AppDatabase::myCinemaUserQuery()
+
+     * myCinemaUserQuery
+     * DAO للوصول لعمليات المستخدمين, insert, select, update, delete حسب تعريفك داخل MyCinemaUserQuery
+     
+end note
+note right of com.example.laracin.data.AppDatabase::getDb(Context)
+
+     * getDb
+     * بترجع نفس نسخة قاعدة البيانات كل مرة
+     *
+     * @param context سياق التطبيق او الاكتفتي
+     * @return AppDatabase instance
+     
+end note
+
+interface com.example.laracin.data.mycinemaTable.cinemaQuery {
+}
+class com.example.laracin.SaveProfileActivity {
+- Button btnSignUp
+- TextInputEditText etFullName
+- AutoCompleteTextView acRole
+- TextView tvSignIn
+- ImageButton imageButton2
+- MyCinemaUserQuery dao
+- FirebaseAuth auth
+# void onCreate(Bundle)
+- boolean validateAndInsertRecord()
++ void saveCinemaUser(MyCinemaUser)
+}
+note top of com.example.laracin.SaveProfileActivity
+
+ * SaveProfileActivity
+ * شاشة استكمال وحفظ ملف المستخدم بعد التسجيل
+ *
+ * المسؤوليات
+ * 1 قراءة بيانات البروفايل من الواجهة, مثل الاسم, الهاتف, الدور, بورتفوليو, خبرة, مهارات
+ * 2 التحقق من صحة بعض المدخلات الاساسية
+ * 3 إنشاء كائن MyCinemaUser وتجهيز حقول البروفايل
+ * 4 حفظ بيانات البروفايل داخل Firebase Realtime Database تحت عقدة CinemaProfiles
+ * 5 عرض رسائل نجاح او فشل للمستخدم
+ 
+end note
+
+note left of com.example.laracin.SaveProfileActivity::btnSignUp
+ زر حفظ بيانات البروفايل
+end note
+note right of com.example.laracin.SaveProfileActivity::etFullName
+ حقول إدخال بيانات البروفايل
+end note
+note left of com.example.laracin.SaveProfileActivity::acRole
+ اختيار الدور من قائمة
+end note
+note right of com.example.laracin.SaveProfileActivity::tvSignIn
+ نص للتنقل للشاشة الرئيسية
+end note
+note left of com.example.laracin.SaveProfileActivity::imageButton2
+ زر صورة بالواجهة, موجود بالتصميم (غير مستخدم بالكود الحالي)
+end note
+note right of com.example.laracin.SaveProfileActivity::dao
+
+     * DAO
+     * طبقة الوصول لقاعدة البيانات في Room
+     * تحتوي دوال CRUD والاستعلامات الخاصة بجدول معين
+     *
+     * مثال
+     * MyCinemaUserQuery هو DAO لجدول MyCinemaUser
+     * - insertUser لاضافة مستخدم
+     * - getUserByEmail لجلب مستخدم بالايميل
+     * - login للتحقق من ايميل وباسورد
+     
+end note
+note left of com.example.laracin.SaveProfileActivity::auth
+ FirebaseAuth (مهيأ لكن غير مستخدم فعليا في الكود الحالي)
+end note
+
+note left of com.example.laracin.SaveProfileActivity::validateAndInsertRecord()
+
+     * validateAndInsertRecord
+     *
+     * الهدف
+     * قراءة بيانات البروفايل من الحقول, التحقق من الاساسيات, ثم تجهيز كائن MyCinemaUser وحفظه
+     *
+     * ملاحظات عن التحقق الحالي
+     * - يتحقق من ان الاسم غير فارغ
+     * - يتحقق من رقم الهاتف باستخدام Patterns.PHONE
+     * - يوجد سطر "التحقق من وجود الإيميل في Room" لكنه فعليا يستعلم بالايميل عبر phone وهذا غير متناسق بالكلام
+     *   والنتيجة user لا تستخدم بعدين, يعني التحقق هذا حاليا بلا تأثير
+     *
+     * @return true اذا التحقق الاساسي نجح, false اذا في اخطاء
+     
+end note
+note right of com.example.laracin.SaveProfileActivity::saveCinemaUser(MyCinemaUser)
+
+     * saveCinemaUser
+     *
+     * الهدف
+     * حفظ كائن MyCinemaUser داخل Firebase Realtime Database
+     *
+     * خطوات العمل
+     * 1 الحصول على مرجع قاعدة البيانات
+     * 2 تحديد العقدة CinemaProfiles لتخزين بروفايلات المستخدمين
+     * 3 إنشاء سجل جديد بمفتاح فريد باستخدام push
+     * 4 تخزين بيانات المستخدم عبر setValue
+     * 5 التعامل مع نجاح وفشل العملية عبر listeners
+     *
+     * ملاحظة مهمة عن الكود الحالي
+     * - الكود يحاول تحويل key الناتج من push الى Long عبر Long.parseLong
+     *   عادة مفاتيح push ليست ارقام فقط, ممكن تكون حروف وارقام, وهذا ممكن يسبب خطأ
+     * - داخل هذه الدالة تم وضع btnSignUp.setOnClickListener مرة ثانية, وهذا تكرار غير منطقي
+     *   وبيعمل ان الزر يتغير سلوكه بعد الاستدعاء, وبيعمل recursion محتمل عبر saveCinemaUser
+     *
+     * @param user كائن المستخدم المراد حفظه
+     
+end note
+
+
+
+androidx.appcompat.app.AppCompatActivity <|-- com.example.laracin.Activity_main1
+androidx.appcompat.app.AppCompatActivity <|-- com.example.laracin.MainActivity2
+androidx.appcompat.app.AppCompatActivity <|-- com.example.laracin.signInActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.laracin.SplashScreen
+androidx.appcompat.app.AppCompatActivity <|-- com.example.laracin.SignUpActivity
+android.widget.ArrayAdapter <|-- com.example.laracin.data.MyCinemaUserTable.MyCinemUserAdapter
+androidx.room.RoomDatabase <|-- com.example.laracin.data.AppDatabase
+androidx.appcompat.app.AppCompatActivity <|-- com.example.laracin.SaveProfileActivity
+@enduml

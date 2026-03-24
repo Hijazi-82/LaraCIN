@@ -81,9 +81,12 @@ public class Activity_main1 extends AppCompatActivity {
         adapteruser.clear();
 
         // جلب المستخدمين من Room واضافتهم للـ adapter (معلق حاليا)
-        // adapteruser.addAll(AppDatabase.getDb(this).myCinemaUserQuery().getAllUsers());
+        adapteruser.addAll(AppDatabase.getDb(this).myCinemaUserQuery().getAllUsers());
 
         // اعلام الـ ListView انه البيانات تغيرت
         adapteruser.notifyDataSetChanged();
     }
+    //todo add load data from firebase
+
+
 }
