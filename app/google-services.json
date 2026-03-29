@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "69102073460",
+    "firebase_url": "https://laracin-3bc9d-default-rtdb.firebaseio.com",
+    "project_id": "laracin-3bc9d",
+    "storage_bucket": "laracin-3bc9d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:69102073460:android:531dc3993bb764b8520321",
+        "android_client_info": {
+          "package_name": "com.example.laracin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIxc8cZ5WNngHh6QYjfodNtgLO4pzVNVM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

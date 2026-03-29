@@ -27,7 +27,8 @@ import java.util.List;
  * - getUserByEmail جلب مستخدم حسب الايميل
  * - login جلب مستخدم مطابق لايميل وباسورد, لاستخدام تسجيل الدخول محليا
  */
-.public interface MyCinemaUserQuery {
+@Dao
+public interface MyCinemaUserQuery {
 
     /**
      * insertUser

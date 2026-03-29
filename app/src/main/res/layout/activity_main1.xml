@@ -12,5 +12,7 @@
         android:layout_width="410dp"
         android:layout_height="692dp"
         tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="39dp" />
+        tools:layout_editor_absoluteY="39dp"
+        tools:listitem="@layout/actor_item_layout"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
