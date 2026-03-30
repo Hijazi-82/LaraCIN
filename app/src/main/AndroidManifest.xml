@@ -36,6 +36,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LaraCIN">
         <activity
+            android:name=".FavoriteActivity"
+            android:exported="false" />
+        <activity
             android:name=".ProfileActivity"
             android:exported="false" />
         <activity

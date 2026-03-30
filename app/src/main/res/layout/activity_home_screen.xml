@@ -82,7 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:text="Projects"
+            android:text="Projects Link"
             android:textColor="#FFFFFF" />
 
         <TextView
@@ -90,7 +90,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:text="Messages"
+            android:text="Favorite"
             android:textColor="#FFFFFF" />
 
         <TextView

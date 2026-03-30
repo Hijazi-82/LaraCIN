@@ -99,4 +99,12 @@ public interface MyCinemaUserQuery {
      */
     @Query("SELECT * FROM MyCinemaUser WHERE email = :email AND password = :password LIMIT 1")
     MyCinemaUser login(String email, String password);
+
+    @Query("SELECT * FROM MyCinemaUser WHERE is_favorite = 1")
+    List<MyCinemaUser> getFavoriteUsers();
+
+
+
+
 }
+

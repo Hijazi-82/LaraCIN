@@ -16,7 +16,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.laracin.data.AppDatabase;
-import com.example.laracin.data.MyCinemaUserTable.MyCinemUserAdapter;
+import com.example.laracin.data.MyCinemaUserTable.MyCinemAdapter;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemaUser;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class HomeActivity extends AppCompatActivity {
     private TextView tvSearchMovies, tvMyList, navProfile;
     private EditText etSearch;
     private ListView listusers;
-    private MyCinemUserAdapter adapteruser;
+    private MyCinemAdapter adapteruser;
     private ArrayList<MyCinemaUser> allUsers = new ArrayList<>();
 
     @SuppressLint("MissingInflatedId")
@@ -49,7 +49,7 @@ public class HomeActivity extends AppCompatActivity {
         etSearch = findViewById(R.id.etSearch);
         listusers = findViewById(R.id.listusers);
 
-        adapteruser = new MyCinemUserAdapter(this, R.layout.actor_item_layout);
+        adapteruser = new MyCinemAdapter(this, R.layout.actor_item_layout);
         listusers.setAdapter(adapteruser);
 
         navProfile.setOnClickListener(v -> {
@@ -102,4 +102,5 @@ public class HomeActivity extends AppCompatActivity {
         adapteruser.addAll(filteredList);
         adapteruser.notifyDataSetChanged();
     }
+
 }

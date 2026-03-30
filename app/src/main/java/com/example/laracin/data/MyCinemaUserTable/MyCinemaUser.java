@@ -72,6 +72,17 @@ public class MyCinemaUser implements Serializable {
     // المهارات كنص
     public String skills;
 
+    @ColumnInfo(name = "is_favorite")
+    private boolean favorite;
+    //NEW FOR ITEM STAR
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+    }
+
     // getters و setters
 
     public long getKeyId() {

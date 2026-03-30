@@ -10,7 +10,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.laracin.data.AppDatabase;
-import com.example.laracin.data.MyCinemaUserTable.MyCinemUserAdapter;
+import com.example.laracin.data.MyCinemaUserTable.MyCinemAdapter;
 
 /**
  * Activity_main1
@@ -30,7 +30,7 @@ public class Activity_main1 extends AppCompatActivity {
     private ListView listusers;
 
     // Adapter مخصص لعرض عناصر المستخدمين داخل ListView
-    private MyCinemUserAdapter adapteruser;
+    private MyCinemAdapter adapteruser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +48,7 @@ public class Activity_main1 extends AppCompatActivity {
          * - this سياق الشاشة الحالية
          * - R.layout.actor_item_layout هو layout لكل عنصر داخل القائمة
          */
-        adapteruser = new MyCinemUserAdapter(this, R.layout.actor_item_layout);
+        adapteruser = new MyCinemAdapter(this, R.layout.actor_item_layout);
 
         // ربط الـ ListView بالـ Adapter
         listusers.setAdapter(adapteruser);
