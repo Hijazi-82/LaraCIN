@@ -91,12 +91,6 @@ import com.google.firebase.auth.FirebaseAuth;
                 public void onClick(View v) {
                     validateAndInsertRecord();
 
-                    // الانتقال لشاشة حفظ البروفايل حسب التصميم الحالي للتطبيق
-                    Intent intent = new Intent(SignUpActivity.this, SaveProfileActivity.class);
-                    startActivity(intent);
-
-                    // اغلاق شاشة التسجيل
-                    finish();
                 }
             });
 
@@ -116,9 +110,10 @@ import com.google.firebase.auth.FirebaseAuth;
             tvSignIn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(SignUpActivity.this, signInActivity.class);
+                    Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
                     startActivity(intent);
                     finish();
+
                 }
             });
         }
@@ -204,6 +199,8 @@ import com.google.firebase.auth.FirebaseAuth;
                                             Toast.LENGTH_SHORT).show();
 
                                     // اغلاق الشاشة بعد نجاح العملية
+                                    Intent intent = new Intent(SignUpActivity.this, SaveProfileActivity.class);
+                                    startActivity(intent);
                                     finish();
 
                                 } else {

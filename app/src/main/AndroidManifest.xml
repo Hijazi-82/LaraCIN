@@ -36,6 +36,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LaraCIN">
         <activity
+            android:name=".AddLinkActivity"
+            android:exported="false" />
+        <activity
+            android:name=".WorkActivity"
+            android:exported="false" />
+        <activity
             android:name=".FavoriteActivity"
             android:exported="false" />
         <activity
@@ -69,7 +75,7 @@
             android:name=".SaveProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".signInActivity"
+            android:name=".SignInActivity"
             android:exported="false" />
         <!--
           SplashScreen

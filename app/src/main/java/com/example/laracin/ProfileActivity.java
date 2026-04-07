@@ -2,8 +2,9 @@ package com.example.laracin;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.text.TextUtils;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -13,15 +14,25 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.laracin.data.AppDatabase;
+import com.example.laracin.data.MyCinemaUserTable.MyCinemaUser;
+import com.google.firebase.auth.FirebaseAuth;
+
 public class ProfileActivity extends AppCompatActivity {
 
     private ImageButton btnBack, btnSettings;
     private LinearLayout btnEditProfile, btnViewWorks;
     private TextView navHome, navProjects, navMessages, navProfile;
 
+    private ImageView imgProfile;
+    private TextView tvName, tvRole, tvBio, tvWorksCount;
+
+    private FirebaseAuth auth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_profile);
 
@@ -30,6 +41,8 @@ public class ProfileActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        auth = FirebaseAuth.getInstance();
 
         btnBack = findViewById(R.id.btnBack);
         btnSettings = findViewById(R.id.btnSettings);
@@ -41,57 +54,72 @@ public class ProfileActivity extends AppCompatActivity {
         navMessages = findViewById(R.id.navMessages);
         navProfile = findViewById(R.id.navProfile);
 
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
+        imgProfile = findViewById(R.id.imgProfile);
+        tvName = findViewById(R.id.tvName);
+        tvRole = findViewById(R.id.tvRole);
+        tvBio = findViewById(R.id.tvBio);
+        tvWorksCount = findViewById(R.id.tvWorksCount);
+
+        btnBack.setOnClickListener(v -> finish());
+
+        btnEditProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, SaveProfileActivity.class);
+            startActivity(intent);
         });
 
-        btnEditProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ProfileActivity.this, SaveProfileActivity.class);
-                startActivity(intent);
-            }
+        btnViewWorks.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, WorkActivity.class);
+            startActivity(intent);
         });
 
-        btnViewWorks.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                  //todo change target activity to wprk activity
-                Intent intent = new Intent(ProfileActivity.this, Activity_main1.class);
-                startActivity(intent);
-            }
+        navHome.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
+            startActivity(intent);
         });
 
-        navHome.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
-                startActivity(intent);
-            }
+        navProjects.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, WorkActivity.class);
+            startActivity(intent);
         });
 
-        navProjects.setOnClickListener(new View.OnClickListener() {
-            @Override
-            //todo change target activity to wprk activity
-            public void onClick(View v) {
-                Intent intent = new Intent(ProfileActivity.this, Activity_main1.class);
-                startActivity(intent);
-            }
+        navMessages.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, FavoriteActivity.class);
+            startActivity(intent);
         });
 
-        navMessages.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
+        navProfile.setOnClickListener(v -> {
         });
+    }
 
-        navProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadUserData();
+    }
+
+    private void loadUserData() {
+        String currentEmail = null;
+
+        if (auth.getCurrentUser() != null) {
+            currentEmail = auth.getCurrentUser().getEmail();
+        }
+
+        if (TextUtils.isEmpty(currentEmail)) {
+            return;
+        }
+
+        MyCinemaUser user = AppDatabase
+                .getDb(this)
+                .myCinemaUserQuery()
+                .getUserByEmail(currentEmail);
+
+        if (user == null) {
+            return;
+        }
+
+        tvName.setText(user.getFullName() != null ? user.getFullName() : "");
+        tvRole.setText(user.getRole() != null ? user.getRole() : "");
+        tvBio.setText(user.getSkills() != null ? user.getSkills() : "");
+        tvWorksCount.setText("0");
     }
 }

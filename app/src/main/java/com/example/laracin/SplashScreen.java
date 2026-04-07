@@ -1,16 +1,11 @@
 package com.example.laracin;
 
-import static androidx.core.content.ContextCompat.startActivity;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 
 public class SplashScreen extends AppCompatActivity {
@@ -42,7 +37,7 @@ public class SplashScreen extends AppCompatActivity {
                     e.printStackTrace();
                 } finally {
                     // الانتقال للشاشة التالية
-                    Intent intent = new Intent(SplashScreen.this, signInActivity.class);
+                    Intent intent = new Intent(SplashScreen.this, SignInActivity.class);
                     startActivity(intent);
                 }
             }

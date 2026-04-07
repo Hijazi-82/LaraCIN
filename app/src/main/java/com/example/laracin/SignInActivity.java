@@ -34,7 +34,7 @@ import com.google.firebase.auth.FirebaseAuth;
  * 4 تسجيل الدخول عبر Firebase Authentication
  * 5 عند النجاح, نقل المستخدم للشاشة الرئيسية
  */
-public class signInActivity extends AppCompatActivity {
+public class SignInActivity extends AppCompatActivity {
 
     // حقول الادخال
     private EditText etEmail;
@@ -79,7 +79,7 @@ public class signInActivity extends AppCompatActivity {
          * عند النقر, ينقل المستخدم لشاشة إنشاء حساب جديد
          */
         tvAsk.setOnClickListener(v -> {
-            Intent intent = new Intent(signInActivity.this, SignUpActivity.class);
+            Intent intent = new Intent(SignInActivity.this, SignUpActivity.class);
             startActivity(intent);
         });
 
@@ -182,18 +182,18 @@ public class signInActivity extends AppCompatActivity {
 
                             if (task.isSuccessful()) {
 
-                                Toast.makeText(signInActivity.this,
+                                Toast.makeText(SignInActivity.this,
                                         "Signing in Succeeded",
                                         Toast.LENGTH_SHORT).show();
 
                                 // الانتقال للشاشة الرئيسية
-                                Intent i = new Intent(signInActivity.this,
-                                        Activity_main1.class);
+                                Intent i = new Intent(SignInActivity.this,
+                                        HomeActivity.class);
                                 startActivity(i);
 
                             } else {
 
-                                Toast.makeText(signInActivity.this,
+                                Toast.makeText(SignInActivity.this,
                                         "Signing in Failed",
                                         Toast.LENGTH_SHORT).show();
 
