@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.laracin.FavoriteActivity;
+import com.example.laracin.ProfileActivity;
 import com.example.laracin.R;
 import com.example.laracin.data.AppDatabase;
 
@@ -80,6 +81,14 @@ public class MyCinemAdapter extends ArrayAdapter<MyCinemaUser> {
         ImageButton imgBtnNote = convertView.findViewById(R.id.imgBtnNote);
         ImageButton imgBtnStar = convertView.findViewById(R.id.imgBtnStar);
 
+        imgBtnNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i=new Intent(getContext(), ProfileActivity.class);
+                i.putExtra("cinmaUser",user);
+                getContext().startActivity(i);
+            }
+        });
 
         /**
          * تعبئة البيانات

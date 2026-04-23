@@ -3,6 +3,7 @@ package com.example.laracin;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -62,10 +63,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
 
-        btnEditProfile.setOnClickListener(v -> {
-            Intent intent = new Intent(ProfileActivity.this, SaveProfileActivity.class);
-            startActivity(intent);
-        });
+
 
         btnViewWorks.setOnClickListener(v -> {
             Intent intent = new Intent(ProfileActivity.this, WorkActivity.class);
@@ -107,16 +105,26 @@ public class ProfileActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(currentEmail)) {
             return;
         }
+        Intent i=getIntent();
+        MyCinemaUser user = i.getParcelableExtra("cinmaUser");
 
-        MyCinemaUser user = AppDatabase
-                .getDb(this)
-                .myCinemaUserQuery()
-                .getUserByEmail(currentEmail);
 
         if (user == null) {
             return;
         }
-
+        else
+        {
+         ///   btnEditProfile.setText("Edit Profile");
+        }
+        if(currentEmail.equals(user.email)==false)
+        {
+            btnEditProfile.setVisibility(View.GONE);
+        }
+        btnEditProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, SaveProfileActivity.class);
+            intent.putExtra("cinmaUser", user);
+            startActivity(intent);
+        });
         tvName.setText(user.getFullName() != null ? user.getFullName() : "");
         tvRole.setText(user.getRole() != null ? user.getRole() : "");
         tvBio.setText(user.getSkills() != null ? user.getSkills() : "");

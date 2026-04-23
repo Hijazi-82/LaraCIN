@@ -423,4 +423,50 @@ public class SaveProfileActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadDataUser();
+    }
+
+    private void loadDataUser() {
+        String currentEmail = null;
+
+        if (auth.getCurrentUser() != null) {
+            currentEmail = auth.getCurrentUser().getEmail();
+        }
+
+        if (TextUtils.isEmpty(currentEmail)) {
+            return;
+        }
+        Intent i=getIntent();
+        MyCinemaUser user = i.getParcelableExtra("cinmaUser");
+
+
+        if (user == null) {
+            return;
+        }
+        else
+        {
+              btnSignUp.setText("Edit Profile");
+        }
+
+        btnSignUp.setOnClickListener(v -> {
+            Intent intent = new Intent(SaveProfileActivity.this, ProfileActivity.class);
+            intent.putExtra("cinmaUser", user);
+            startActivity(intent);
+        });
+        etFullName.setText(user.getFullName()!= null ? user.getFullName() : "");
+        etPhone.setText(user.getPhone()!= null ? user.getPhone() : "");
+        acRole.setText(user.getRole()!= null ? user.getRole() : "");
+        etPortfolio.setText(user.getPortfolio()!= null ? user.getPortfolio() : "");
+      ///  etExperienceYears.setText(user.getExperienceYears() != null ? user.getExperienceYears() : "");
+        etSkills.setText(user.getSkills() != null ? user.getSkills() : "");
+
+
 }
+}
+
+
+///   tv.setText===> et.setText
+
