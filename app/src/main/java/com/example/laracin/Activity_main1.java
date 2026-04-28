@@ -2,8 +2,10 @@ package com.example.laracin;
 
 import android.os.Bundle;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -11,6 +13,12 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.laracin.data.AppDatabase;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemAdapter;
+import com.example.laracin.data.MyCinemaUserTable.MyCinemaUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * Activity_main1
@@ -88,5 +96,33 @@ public class Activity_main1 extends AppCompatActivity {
     }
     //todo add load data from firebase
 
+    /**
+     * جلب البيانات من Firebase Realtime Database
+     */
+    private void loadDataFromFirebase() {
+        // الوصول لمرجع "users" في قاعدة البيانات
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                adapteruser.clear();
+                for (DataSnapshot data : snapshot.getChildren()) {
+                    // تحويل البيانات من Firebase إلى كائن MyCinemaUser
+                    MyCinemaUser user = data.getValue(MyCinemaUser.class);
+                    if (user != null) {
+                        adapteruser.add(user);
+                    }
+                }
+                // تحديث القائمة
+                adapteruser.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(Activity_main1.this, "فشل جلب البيانات: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
 }

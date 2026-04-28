@@ -462,8 +462,6 @@ public class SaveProfileActivity extends AppCompatActivity {
         etPortfolio.setText(user.getPortfolio()!= null ? user.getPortfolio() : "");
       ///  etExperienceYears.setText(user.getExperienceYears() != null ? user.getExperienceYears() : "");
         etSkills.setText(user.getSkills() != null ? user.getSkills() : "");
-
-
 }
 }
 
