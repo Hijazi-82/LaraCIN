@@ -33,7 +33,7 @@ public class CinemaUserService extends Service {
 
             myRef.child(key).setValue(user).addOnCompleteListener(fbTask -> {
                 if (fbTask.isSuccessful()) {
-                    // In a service, use context from getApplicationContext() for Toasts
+                    // In a service, use conte   xt from getApplicationContext() for Toasts
                     Toast.makeText(getApplicationContext(), "Sync Successful", Toast.LENGTH_SHORT).show();
                 }
                 // Stop the service once the work is done to save battery/RAM

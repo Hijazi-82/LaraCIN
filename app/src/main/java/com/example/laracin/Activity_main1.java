@@ -115,14 +115,14 @@ public class Activity_main1 extends AppCompatActivity {
                     }
                 }
                 // تحديث القائمة
-                adapteruser.notifyDataSetChanged();
-            }
+                adapteruser.notifyDataSetChanged();}
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(Activity_main1.this, "فشل جلب البيانات: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
-        });
+
+                });
     }
 
 }

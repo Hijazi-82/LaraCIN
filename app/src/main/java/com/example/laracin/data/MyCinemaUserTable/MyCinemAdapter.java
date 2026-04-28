@@ -56,6 +56,7 @@ public class MyCinemAdapter extends ArrayAdapter<MyCinemaUser> {
      * @param parent الـ ListView نفسه
      * @return view جاهزة للعرض
      */
+
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
