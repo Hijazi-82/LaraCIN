@@ -83,7 +83,7 @@ public class SaveProfileActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_save_profile);
 
-        if(getIntent()!= null && getIntent().getExtras().get("cinmaUser")!=null)
+        if(getIntent()!= null && getIntent().getExtras()!= null && getIntent().getExtras().get("cinmaUser")!=null)
          cinmaUser = (MyCinemaUser) getIntent().getExtras().get("cinmaUser");
 
         auth = FirebaseAuth.getInstance();
