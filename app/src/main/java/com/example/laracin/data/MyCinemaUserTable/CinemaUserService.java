@@ -11,46 +11,52 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class CinemaUserService extends Service {
-    public CinemaUserService() {
-    }
-        @Override
-        public int onStartCommand(Intent intent, int flags, int startId) {
-            //read the data that received within the intent
-            if (intent != null && intent.hasExtra("task_extra")) {
-                MyCinemaUser user = (MyCinemaUser) intent.getSerializableExtra("task_extra");
-                saveMyTaskToFirebase(user);
-            }
-            // START_NOT_STICKY means if the system kills the service, don't recreate it automatically
-            return START_NOT_STICKY;
-        }
 
+    public static final String EXTRA_USER = "user_extra";
 
-        private void saveMyTaskToFirebase(MyCinemaUser user) {
-            DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("tasks");
-            String key = myRef.push().getKey();
-            user.setKeyId(user.keyId);
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
 
+        if (intent != null && intent.hasExtra(EXTRA_USER)) {
+            MyCinemaUser user = (MyCinemaUser) intent.getSerializableExtra(EXTRA_USER);
 
-            myRef.child(key).setValue(user).addOnCompleteListener(fbTask -> {
-                if (fbTask.isSuccessful()) {
-                    // In a service, use conte   xt from getApplicationContext() for Toasts
-                    Toast.makeText(getApplicationContext(), "Sync Successful", Toast.LENGTH_SHORT).show();
-                }
-                // Stop the service once the work is done to save battery/RAM
+            if (user != null) {
+                saveUserToFirebase(user);
+            } else {
                 stopSelf();
-            });
+            }
+        } else {
+            stopSelf();
         }
 
-
-        @Nullable
-        @Override
-        public IBinder onBind(Intent intent) {
-            return null; // We are using a Started Service, not a Bound Service
-        }
+        return START_NOT_STICKY;
     }
 
+    private void saveUserToFirebase(MyCinemaUser user) {
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("users");
+        String key="";
+        if(user.getKey()==null || user.getKey().isEmpty())
+        {
+            key = myRef.push().getKey();
+            user.setKey(key);
+        }
 
 
 
+        myRef.child(user.getKey()).setValue(user).addOnCompleteListener(fbTask -> {
+            if (fbTask.isSuccessful()) {
+                Toast.makeText(getApplicationContext(), "User Saved Successfully", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "Saving Failed", Toast.LENGTH_SHORT).show();
+            }
 
+            stopSelf();
+        });
+    }
 
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+}

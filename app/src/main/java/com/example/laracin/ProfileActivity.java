@@ -8,8 +8,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -18,6 +20,11 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.laracin.data.AppDatabase;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemaUser;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -96,38 +103,47 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void loadUserData() {
-        String currentEmail = null;
+//        String currentEmail = null;
+//
+//        if (auth.getCurrentUser() != null) {
+//            currentEmail = auth.getCurrentUser().getEmail();
+//        }
+//
+//        if (TextUtils.isEmpty(currentEmail)) {
+//            return;
+//        }
+//        Intent i=getIntent();
+        //MyCinemaUser user = i.getParcelableExtra("cinmaUser");
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("users");
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        myRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                MyCinemaUser user = snapshot.getValue(MyCinemaUser.class);
+                if (user == null) {
+                    Toast.makeText(ProfileActivity.this, "user error", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-        if (auth.getCurrentUser() != null) {
-            currentEmail = auth.getCurrentUser().getEmail();
-        }
 
-        if (TextUtils.isEmpty(currentEmail)) {
-            return;
-        }
-        Intent i=getIntent();
-        MyCinemaUser user = i.getParcelableExtra("cinmaUser");
+                    //btnEditProfile.setVisibility(View.GONE);
 
+                btnEditProfile.setOnClickListener(v -> {
+                    Intent intent = new Intent(ProfileActivity.this, SaveProfileActivity.class);
+                    intent.putExtra("cinmaUser", user);
+                    startActivity(intent);
+                });
+                tvName.setText(user.getFullName() != null ? user.getFullName() : "");
+                tvRole.setText(user.getRole() != null ? user.getRole() : "");
+                tvBio.setText(user.getSkills() != null ? user.getSkills() : "");
+                tvWorksCount.setText("0");
+            }
 
-        if (user == null) {
-            return;
-        }
-        else
-        {
-         ///   btnEditProfile.setText("Edit Profile");
-        }
-        if(currentEmail.equals(user.email)==false)
-        {
-            btnEditProfile.setVisibility(View.GONE);
-        }
-        btnEditProfile.setOnClickListener(v -> {
-            Intent intent = new Intent(ProfileActivity.this, SaveProfileActivity.class);
-            intent.putExtra("cinmaUser", user);
-            startActivity(intent);
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
         });
-        tvName.setText(user.getFullName() != null ? user.getFullName() : "");
-        tvRole.setText(user.getRole() != null ? user.getRole() : "");
-        tvBio.setText(user.getSkills() != null ? user.getSkills() : "");
-        tvWorksCount.setText("0");
+
     }
 }

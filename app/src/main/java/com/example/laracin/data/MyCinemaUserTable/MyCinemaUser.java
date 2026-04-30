@@ -52,6 +52,7 @@ public class MyCinemaUser implements Serializable {
     // Primary key لقاعدة Room, يتم توليده تلقائيا
     @PrimaryKey(autoGenerate = true)
     public long keyId;
+    public String key;
 
     // الاسم الكامل, اسم العمود في الجدول full_Name
     @ColumnInfo(name = "full_Name")
@@ -155,6 +156,14 @@ public class MyCinemaUser implements Serializable {
 
     public void setSkills(String skills) {
         this.skills = skills;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return key;
     }
 
     /**

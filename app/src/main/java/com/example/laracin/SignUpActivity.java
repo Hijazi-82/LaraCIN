@@ -22,6 +22,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * SignUpActivity
@@ -188,6 +190,8 @@ import com.google.firebase.auth.FirebaseAuth;
                                     myuser.setEmail(email);
                                     myuser.setPassword(password);
                                     myuser.setRole("myuser");
+                                   myuser.setKey( task.getResult().getUser().getUid());
+                                    saveOrUpdateUserToFirebase(myuser);
 
                                     // إدخال المستخدم في قاعدة البيانات المحلية
                                     AppDatabase.getDb(SignUpActivity.this)
@@ -219,4 +223,26 @@ import com.google.firebase.auth.FirebaseAuth;
 
             return isValid;
         }
+    private void saveOrUpdateUserToFirebase(MyCinemaUser user) {
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("users");
+        String key="";
+        if(user.getKey()==null || user.getKey().isEmpty())
+        {
+            key = myRef.push().getKey();
+            user.setKey(key);
+        }
+
+
+
+        myRef.child(user.getKey()).setValue(user).addOnCompleteListener(fbTask -> {
+            if (fbTask.isSuccessful()) {
+                Toast.makeText(getApplicationContext(), "User Saved Successfully", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "Saving Failed", Toast.LENGTH_SHORT).show();
+            }
+
+
+        });
+    }
+
     }
