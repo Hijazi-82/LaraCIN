@@ -36,6 +36,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LaraCIN">
         <activity
+            android:name=".MainLinksViewActivity"
+            android:exported="false" />
+        <activity
             android:name=".AddLinkActivity"
             android:exported="false" />
         <activity

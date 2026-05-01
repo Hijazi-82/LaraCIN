@@ -44,6 +44,18 @@ import java.io.Serializable;
  * skills
  * - نص يمثل مهارات المستخدم, مثال مونتاج, اضاءة, Final Cut Pro
  *
+ * workName
+ * - اسم العمل الذي يريد المستخدم عرضه
+ *
+ * workType
+ * - نوع العمل, مثال تمثيل, تصوير, مونتاج
+ *
+ * workDescription
+ * - وصف مختصر للعمل
+ *
+ * workLink
+ * - رابط العمل, مثال YouTube, Drive, Portfolio
+ *
  * ملاحظة
  * الكلاس يحتوي getters و setters لكل حقل, و toString لطباعة محتوى الكائن للتشخيص
  */
@@ -73,9 +85,16 @@ public class MyCinemaUser implements Serializable {
     // المهارات كنص
     public String skills;
 
+    // بيانات روابط الأعمال
+    public String workName;
+    public String workType;
+    public String workDescription;
+    public String workLink;
+
     @ColumnInfo(name = "is_favorite")
     private boolean favorite;
-    //NEW FOR ITEM STAR
+
+    // NEW FOR ITEM STAR
     public boolean isFavorite() {
         return favorite;
     }
@@ -166,6 +185,40 @@ public class MyCinemaUser implements Serializable {
         return key;
     }
 
+    // getters و setters الخاصة بروابط الأعمال
+
+    public String getWorkName() {
+        return workName;
+    }
+
+    public void setWorkName(String workName) {
+        this.workName = workName;
+    }
+
+    public String getWorkType() {
+        return workType;
+    }
+
+    public void setWorkType(String workType) {
+        this.workType = workType;
+    }
+
+    public String getWorkDescription() {
+        return workDescription;
+    }
+
+    public void setWorkDescription(String workDescription) {
+        this.workDescription = workDescription;
+    }
+
+    public String getWorkLink() {
+        return workLink;
+    }
+
+    public void setWorkLink(String workLink) {
+        this.workLink = workLink;
+    }
+
     /**
      * toString
      * مفيد للتجربة والتشخيص, يعرض كل الحقول كنص واحد
@@ -174,6 +227,7 @@ public class MyCinemaUser implements Serializable {
     public String toString() {
         return "MyCinemaUser{" +
                 "keyId=" + keyId +
+                ", key='" + key + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
@@ -182,6 +236,11 @@ public class MyCinemaUser implements Serializable {
                 ", portfolio='" + portfolio + '\'' +
                 ", experienceYears=" + experienceYears +
                 ", skills='" + skills + '\'' +
+                ", workName='" + workName + '\'' +
+                ", workType='" + workType + '\'' +
+                ", workDescription='" + workDescription + '\'' +
+                ", workLink='" + workLink + '\'' +
+                ", favorite=" + favorite +
                 '}';
     }
 }

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="#1E1E1E"
+    android:layout_margin="8dp">
+
+    <!-- اسم العمل -->
+    <TextView
+        android:id="@+id/tvWorkName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Work Name"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <!-- نوع العمل -->
+    <TextView
+        android:id="@+id/tvWorkType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Type"
+        android:textColor="#AAAAAA"
+        android:textSize="14sp" />
+
+    <!-- الوصف -->
+    <TextView
+        android:id="@+id/tvWorkDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Description"
+        android:textColor="#CCCCCC"
+        android:textSize="13sp"
+        android:layout_marginTop="4dp" />
+
+    <!-- الرابط -->
+    <TextView
+        android:id="@+id/tvWorkLink"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Link"
+        android:textColor="#4CAF50"
+        android:textSize="13sp"
+        android:layout_marginTop="4dp" />
+
+</LinearLayout>

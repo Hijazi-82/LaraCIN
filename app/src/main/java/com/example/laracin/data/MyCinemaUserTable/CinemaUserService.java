@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.example.laracin.HomeActivity;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -46,6 +47,8 @@ public class CinemaUserService extends Service {
         myRef.child(user.getKey()).setValue(user).addOnCompleteListener(fbTask -> {
             if (fbTask.isSuccessful()) {
                 Toast.makeText(getApplicationContext(), "User Saved Successfully", Toast.LENGTH_SHORT).show();
+                stopSelf();
+                startActivity(new Intent(getApplicationContext(), HomeActivity.class));
             } else {
                 Toast.makeText(getApplicationContext(), "Saving Failed", Toast.LENGTH_SHORT).show();
             }

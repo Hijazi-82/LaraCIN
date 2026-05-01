@@ -2,7 +2,7 @@
 <resources>
     <item name="btnMyList" type="id" />
     <item name="btnSearchMovies" type="id" />
-    <item name="tvMyList" type="id" />
+    <item name="navFavorite" type="id" />
     <item name="tvAddMovie" type="id" />
     <item name="tvSearchMovies" type="id" />
 </resources>

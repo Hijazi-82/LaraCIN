@@ -34,7 +34,7 @@ import java.util.ArrayList;
 public class HomeActivity extends AppCompatActivity {
 
     // عناصر نصية من الواجهة
-    private TextView tvSearchMovies, tvMyList, navProfile ,navProjects,navFavorite;
+    private TextView   navProfile ,navProjects,navFavorite;
 
     // خانة البحث
     private EditText etSearch;
@@ -67,8 +67,7 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         // ربط عناصر الواجهة
-        tvSearchMovies = findViewById(R.id.tvSearchMovies);
-        tvMyList = findViewById(R.id.tvMyList);
+
         navProfile = findViewById(R.id.navProfile);
         etSearch = findViewById(R.id.etSearch);
         listusers = findViewById(R.id.listusers);
