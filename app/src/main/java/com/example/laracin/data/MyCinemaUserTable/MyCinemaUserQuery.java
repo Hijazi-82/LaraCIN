@@ -107,4 +107,3 @@ public interface MyCinemaUserQuery {
 
 
 }
-

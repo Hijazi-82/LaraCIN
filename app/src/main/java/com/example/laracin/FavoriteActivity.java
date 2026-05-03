@@ -67,8 +67,24 @@ public class FavoriteActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
-    }
 
+
+        navProjects.setOnClickListener(v -> {
+            Intent intent = new Intent(FavoriteActivity.this, WorkActivity.class);
+            startActivity(intent);
+            finish();
+        });
+
+        navFavorite.setOnClickListener(v -> {
+            // لا يلزم تغيير الشاشة إذا كان نفسها
+        });
+
+        navProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(FavoriteActivity.this, ProfileActivity.class);
+            startActivity(intent);
+            finish();
+        });
+    }
     /**
      * onResume
      *

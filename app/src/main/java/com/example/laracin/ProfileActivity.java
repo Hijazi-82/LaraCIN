@@ -2,8 +2,6 @@ package com.example.laracin;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,7 +15,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.laracin.data.AppDatabase;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemaUser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -30,7 +27,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private ImageButton btnBack, btnSettings;
     private LinearLayout btnEditProfile, btnViewWorks;
-    private TextView navHome, navProjects, navMessages, navProfile;
+    private TextView navHome, navProjects, navFavorite, navProfile;
 
     private ImageView imgProfile;
     private TextView tvName, tvRole, tvBio, tvWorksCount;
@@ -59,7 +56,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         navHome = findViewById(R.id.navHome);
         navProjects = findViewById(R.id.navProjects);
-        navMessages = findViewById(R.id.navMessages);
+        navFavorite = findViewById(R.id.navFavorite);
         navProfile = findViewById(R.id.navProfile);
 
         imgProfile = findViewById(R.id.imgProfile);
@@ -87,7 +84,7 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        navMessages.setOnClickListener(v -> {
+        navFavorite.setOnClickListener(v -> {
             Intent intent = new Intent(ProfileActivity.this, FavoriteActivity.class);
             startActivity(intent);
         });
