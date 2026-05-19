@@ -23,59 +23,56 @@ import java.util.HashMap;
 /**
  * WorkActivity
  *
- * شاشة روابط الأعمال.
+ * شاشة روابط الأعمال في التطبيق.
  *
  * وظيفة الشاشة:
- * - عرض روابط الأعمال التي يضيفها المستخدم.
- * - إضافة رابط جديد عن طريق AddLinkActivity.
- * - البحث داخل الروابط حسب اسم العمل أو نوعه أو وصفه.
- * - فتح الرابط عند الضغط العادي عليه.
- * - حذف الرابط عند الضغط المطوّل عليه.
+ * 1. عرض روابط الأعمال التي يضيفها المستخدم.
+ * 2. فتح شاشة AddLinkActivity لإضافة رابط جديد.
+ * 3. البحث داخل الروابط حسب اسم العمل أو نوعه أو وصفه.
+ * 4. فتح رابط العمل في المتصفح عند الضغط العادي.
+ * 5. حذف الرابط من القائمة عند الضغط المطوّل.
+ * 6. التنقل بين شاشة الهوم، المفضلة، والبروفايل.
  */
 public class WorkActivity extends AppCompatActivity {
 
-    // حقول إدخال
     // حقل البحث داخل روابط الأعمال
     private EditText etProjectsSearch;
 
-    // أزرار
-    // زر ينقل المستخدم إلى شاشة إضافة رابط جديد
+    // زر فتح شاشة إضافة رابط جديد
     private Button btnAddLink;
 
-    // قوائم عرض
-    // ListView لعرض روابط الأعمال داخل الشاشة
+    // قائمة عرض روابط الأعمال
     private ListView listProjectsLinks;
 
-    // عناصر التنقل بين الشاشات
-    // navHome ينقل المستخدم إلى شاشة البيت
-    // navProjects يمثل شاشة المشاريع الحالية
-    // navFavorite ينقل المستخدم إلى شاشة المفضلة
-    // navProfile ينقل المستخدم إلى شاشة البروفايل
-    private TextView navHome, navProjects, navFavorite, navProfile;
+    // عناصر التنقل أسفل الشاشة
+    private TextView navHome;
+    private TextView navProjects;
+    private TextView navFavorite;
+    private TextView navProfile;
 
-    // قوائم البيانات
-    // allLinksList تحفظ جميع الروابط التي تمت إضافتها
-    // filteredLinksList تحفظ الروابط بعد عملية البحث أو الفلترة
-    private ArrayList<HashMap<String, String>> allLinksList, filteredLinksList;
+    // قائمة تحفظ كل الروابط التي تمت إضافتها
+    private ArrayList<HashMap<String, String>> allLinksList;
 
-    // Adapter
-    // يربط البيانات الموجودة داخل filteredLinksList مع ListView
+    // قائمة تحفظ الروابط بعد البحث أو الفلترة
+    private ArrayList<HashMap<String, String>> filteredLinksList;
+
+    // Adapter يربط بيانات الروابط مع ListView
     private SimpleAdapter adapter;
 
     /**
      * addLinkLauncher
      *
-     * مسؤول عن فتح شاشة AddLinkActivity وانتظار النتيجة منها.
-     * عندما يرجع المستخدم من شاشة إضافة الرابط، يتم أخذ البيانات:
-     * workName, workType, workDescription, workLink
-     * ثم إضافتها إلى القائمة وعرضها في الشاشة.
+     * يفتح شاشة AddLinkActivity وينتظر النتيجة منها.
+     * عند رجوع المستخدم من شاشة إضافة الرابط، يتم أخذ بيانات الرابط
+     * وإضافتها إلى القائمة.
      */
     private final ActivityResultLauncher<Intent> addLinkLauncher =
             registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
                     result -> {
 
-                        if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        if (result.getResultCode() == Activity.RESULT_OK
+                                && result.getData() != null) {
 
                             String workName = result.getData().getStringExtra("workName");
                             String workType = result.getData().getStringExtra("workType");
@@ -89,18 +86,26 @@ public class WorkActivity extends AppCompatActivity {
                             item.put("workLink", workLink);
 
                             allLinksList.add(item);
-
                             filterLinks(etProjectsSearch.getText().toString().trim());
                         }
                     }
             );
 
+    /**
+     * onCreate
+     *
+     * يتم استدعاؤها عند فتح شاشة روابط الأعمال.
+     * داخلها يتم ربط عناصر الواجهة، تجهيز القائمة،
+     * وتحديد أوامر الأزرار والبحث.
+     *
+     * @param savedInstanceState يحفظ حالة الشاشة عند إعادة إنشائها
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_work);
 
-        // ربط عناصر الواجهة مع الكود
+        // ربط عناصر الواجهة
         etProjectsSearch = findViewById(R.id.etProjectsSearch);
         btnAddLink = findViewById(R.id.btnAddLink);
         listProjectsLinks = findViewById(R.id.listProjectsLinks);
@@ -114,7 +119,7 @@ public class WorkActivity extends AppCompatActivity {
         allLinksList = new ArrayList<>();
         filteredLinksList = new ArrayList<>();
 
-        // إنشاء Adapter لعرض اسم العمل ونوعه داخل القائمة
+        // إنشاء Adapter لعرض اسم العمل ونوع العمل
         adapter = new SimpleAdapter(
                 this,
                 filteredLinksList,
@@ -123,18 +128,16 @@ public class WorkActivity extends AppCompatActivity {
                 new int[]{android.R.id.text1, android.R.id.text2}
         );
 
-        // ربط الـ Adapter مع الـ ListView
         listProjectsLinks.setAdapter(adapter);
 
-        // عند الضغط على زر Add Link يتم فتح شاشة إضافة رابط جديد
+        // فتح شاشة إضافة رابط جديد
         btnAddLink.setOnClickListener(v -> {
             Intent intent = new Intent(WorkActivity.this, AddLinkActivity.class);
             addLinkLauncher.launch(intent);
         });
 
-        // عند الضغط العادي على عنصر من القائمة يتم فتح الرابط في المتصفح
+        // فتح الرابط في المتصفح عند الضغط العادي على item
         listProjectsLinks.setOnItemClickListener((parent, view, position, id) -> {
-
             HashMap<String, String> item = filteredLinksList.get(position);
             String link = item.get("workLink");
 
@@ -153,14 +156,12 @@ public class WorkActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // عند الضغط المطوّل على عنصر من القائمة يتم حذف الرابط
+        // حذف الرابط عند الضغط المطوّل على item
         listProjectsLinks.setOnItemLongClickListener((parent, view, position, id) -> {
-
             HashMap<String, String> item = filteredLinksList.get(position);
 
             allLinksList.remove(item);
             filteredLinksList.remove(item);
-
             adapter.notifyDataSetChanged();
 
             Toast.makeText(this, "Link deleted", Toast.LENGTH_SHORT).show();
@@ -186,9 +187,9 @@ public class WorkActivity extends AppCompatActivity {
             }
         });
 
-        // الانتقال إلى شاشة البيت
+        // الانتقال إلى شاشة الهوم
         navHome.setOnClickListener(v -> {
-            Intent intent = new Intent(WorkActivity.this, Activity_main1.class);
+            Intent intent = new Intent(WorkActivity.this, HomeActivity.class);
             startActivity(intent);
             finish();
         });
@@ -200,24 +201,23 @@ public class WorkActivity extends AppCompatActivity {
             finish();
         });
 
-        // الانتقال إلى شاشة البروفايل / تعديل البروفايل
+        // الانتقال إلى شاشة البروفايل
         navProfile.setOnClickListener(v -> {
-            Intent intent = new Intent(WorkActivity.this, SaveProfileActivity.class);
+            Intent intent = new Intent(WorkActivity.this, ProfileActivity.class);
             startActivity(intent);
             finish();
         });
 
-        // المستخدم موجود أصلاً في شاشة المشاريع
+        // المستخدم موجود أصلًا في شاشة روابط الأعمال
         navProjects.setOnClickListener(v -> {
+            // لا حاجة لفتح شاشة جديدة
         });
     }
 
     /**
      * filterLinks
      *
-     * دالة تبحث داخل روابط الأعمال.
-     *
-     * البحث يتم حسب:
+     * تبحث داخل روابط الأعمال حسب:
      * - اسم العمل
      * - نوع العمل
      * - وصف العمل

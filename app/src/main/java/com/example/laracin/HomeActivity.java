@@ -8,58 +8,68 @@ import android.text.TextWatcher;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.laracin.data.AppDatabase;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemAdapter;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemaUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
 /**
  * HomeActivity
  *
- * شاشة الهوم
+ * الشاشة الرئيسية في التطبيق.
  *
- * الوظائف الأساسية:
- * 1) عرض كل المستخدمين الموجودين بقاعدة البيانات
- * 2) البحث عن المستخدمين حسب الاسم أو الدور
- * 3) الانتقال إلى شاشة البروفايل
+ * وظيفة الشاشة:
+ * 1. جلب المستخدمين من Firebase Realtime Database.
+ * 2. عرض المستخدمين داخل ListView.
+ * 3. البحث عن مستخدم حسب الاسم أو الدور.
+ * 4. التنقل إلى شاشة البروفايل، روابط الأعمال، والمفضلة.
  */
 public class HomeActivity extends AppCompatActivity {
 
-    // عناصر نصية من الواجهة
-    private TextView   navProfile ,navProjects,navFavorite;
+    // عناصر التنقل أسفل الشاشة
+    private TextView navProfile, navProjects ,navFavorite;
 
-    // خانة البحث
+    // حقل البحث عن المستخدمين
     private EditText etSearch;
 
     // قائمة عرض المستخدمين
     private ListView listusers;
 
-    // الأدابتر المسؤول عن عرض عناصر MyCinemaUser داخل ListView
+    // Adapter يربط بيانات المستخدمين مع ListView
     private MyCinemAdapter adapteruser;
 
-    // قائمة محلية لتخزين كل المستخدمين الذين تم جلبهم من قاعدة البيانات
+    // قائمة تحفظ جميع المستخدمين الذين تم جلبهم من Firebase
     private ArrayList<MyCinemaUser> allUsers = new ArrayList<>();
 
+    /**
+     * onCreate
+     *
+     * يتم استدعاؤها عند فتح شاشة Home.
+     * داخلها يتم ربط عناصر الواجهة، تجهيز الـ Adapter،
+     * تفعيل أزرار التنقل، وتجهيز البحث.
+     */
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // تفعيل EdgeToEdge
         EdgeToEdge.enable(this);
-
-        // تحميل واجهة الشاشة
         setContentView(R.layout.activity_home_screen);
 
-        // ضبط الحواف حسب system bars
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -67,55 +77,49 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         // ربط عناصر الواجهة
-
         navProfile = findViewById(R.id.navProfile);
+        navProjects = findViewById(R.id.navProjects);
+        navFavorite = findViewById(R.id.navFavorite);
         etSearch = findViewById(R.id.etSearch);
         listusers = findViewById(R.id.listusers);
-        navProjects=findViewById(R.id.navProjects);
-        navFavorite=findViewById(R.id.navFavorite);
 
-
-        // إنشاء الأدابتر وربطه بالـ ListView
+        // إنشاء Adapter وربطه مع ListView
         adapteruser = new MyCinemAdapter(this, R.layout.actor_item_layout);
         listusers.setAdapter(adapteruser);
 
-        /**
-         * عند الضغط على navProfile
-         * ينتقل المستخدم إلى شاشة ProfileActivity
-         */
+        // الانتقال إلى شاشة البروفايل
         navProfile.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
             startActivity(intent);
         });
 
+        // الانتقال إلى شاشة روابط الأعمال
         navProjects.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this, WorkActivity.class);
             startActivity(intent);
         });
 
+        // الانتقال إلى شاشة المفضلة
         navFavorite.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this, FavoriteActivity.class);
             startActivity(intent);
         });
-        /**
-         * مراقبة النص داخل خانة البحث
-         * كلما المستخدم يكتب، يتم استدعاء filterUsers
-         */
+
+        // البحث أثناء الكتابة
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // غير مستخدمة حاليا
+                // غير مستخدمة
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // تصفية المستخدمين حسب النص المكتوب
                 filterUsers(s.toString());
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                // غير مستخدمة حاليا
+                // غير مستخدمة
             }
         });
     }
@@ -123,62 +127,83 @@ public class HomeActivity extends AppCompatActivity {
     /**
      * onResume
      *
-     * يتم استدعاؤها كل مرة ترجع فيها الشاشة للواجهة
-     *
-     * هنا نقوم بـ:
-     * 1) تفريغ القائمة الحالية
-     * 2) جلب كل المستخدمين من قاعدة البيانات
-     * 3) تحديث الأدابتر لعرضهم
+     * يتم استدعاؤها كل مرة يرجع فيها المستخدم إلى شاشة Home.
+     * هنا يتم تحميل المستخدمين من Firebase.
      */
     @Override
     protected void onResume() {
         super.onResume();
+        loadUsersFromFirebase();
+    }
 
-        // تنظيف القائمة المحلية
-        allUsers.clear();
+    /**
+     * loadUsersFromFirebase
+     *
+     * تجلب جميع المستخدمين من Firebase Realtime Database
+     * من المسار users، ثم تعرضهم داخل ListView.
+     */
+    private void loadUsersFromFirebase() {
 
-        // جلب جميع المستخدمين من Room
-        allUsers.addAll(AppDatabase.getDb(this).myCinemaUserQuery().getAllUsers());
+        DatabaseReference usersRef = FirebaseDatabase
+                .getInstance()
+                .getReference("users");
 
-        // تحديث الأدابتر بالمستخدمين
-        adapteruser.clear();
-        adapteruser.addAll(allUsers);
-        adapteruser.notifyDataSetChanged();
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                allUsers.clear();
+                adapteruser.clear();
+
+                for (DataSnapshot data : snapshot.getChildren()) {
+
+                    MyCinemaUser user = data.getValue(MyCinemaUser.class);
+
+                    if (user != null) {
+                        allUsers.add(user);
+                        adapteruser.add(user);
+                    }
+                }
+
+                adapteruser.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(HomeActivity.this,
+                        "Failed to load users: " + error.getMessage(),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**
      * filterUsers
      *
-     * تقوم بتصفية المستخدمين حسب النص المدخل
-     *
-     * البحث يتم على:
-     * - fullName
-     * - role
-     *
-     * @param text النص الذي يكتبه المستخدم في خانة البحث
+     * تبحث داخل قائمة المستخدمين حسب:
+     * - الاسم الكامل fullName
+     * - الدور role
      */
     private void filterUsers(String text) {
 
-        // قائمة مؤقتة لتخزين النتائج بعد التصفية
         ArrayList<MyCinemaUser> filteredList = new ArrayList<>();
-
-        // تحويل النص إلى lowercase وإزالة الفراغات الزائدة
         String searchText = text.toLowerCase().trim();
 
-        // المرور على جميع المستخدمين
         for (MyCinemaUser user : allUsers) {
 
-            // حماية من null
-            String fullName = user.getFullName() != null ? user.getFullName().toLowerCase() : "";
-            String role = user.getRole() != null ? user.getRole().toLowerCase() : "";
+            String fullName = user.getFullName() != null
+                    ? user.getFullName().toLowerCase()
+                    : "";
 
-            // إذا النص موجود في الاسم أو الدور، أضف المستخدم
+            String role = user.getRole() != null
+                    ? user.getRole().toLowerCase()
+                    : "";
+
             if (fullName.contains(searchText) || role.contains(searchText)) {
                 filteredList.add(user);
             }
         }
 
-        // تحديث الأدابتر بالنتائج المفلترة
         adapteruser.clear();
         adapteruser.addAll(filteredList);
         adapteruser.notifyDataSetChanged();

@@ -8,58 +8,58 @@ import androidx.room.Update;
 
 import java.util.List;
 
-
 /**
  * MyCinemaUserQuery
- * DAO خاص بجدول MyCinemaUser داخل Room
  *
- * الهدف
- * توفير عمليات CRUD واستعلامات جاهزة للتعامل مع بيانات المستخدمين محليا
+ * DAO خاص بجدول MyCinemaUser داخل Room Database.
  *
- * CRUD
- * - Insert اضافة مستخدم جديد
- * - Update تعديل بيانات مستخدم موجود
- * - Delete حذف مستخدم
- *
- * Queries
- * - getAllUsers جلب كل المستخدمين
- * - getUserById جلب مستخدم حسب المفتاح keyId
- * - getUserByEmail جلب مستخدم حسب الايميل
- * - login جلب مستخدم مطابق لايميل وباسورد, لاستخدام تسجيل الدخول محليا
+ * وظيفة الواجهة:
+ * 1. إضافة مستخدم جديد.
+ * 2. تعديل بيانات مستخدم موجود.
+ * 3. حذف مستخدم.
+ * 4. جلب المستخدمين من قاعدة البيانات.
+ * 5. البحث عن مستخدم حسب id أو email.
+ * 6. فحص تسجيل الدخول محليًا.
+ * 7. جلب المستخدمين المفضلين.
  */
 @Dao
 public interface MyCinemaUserQuery {
 
     /**
      * insertUser
-     * اضافة سجل مستخدم جديد داخل قاعدة البيانات
      *
-     * @param user كائن MyCinemaUser المراد ادخاله
+     * تضيف مستخدم جديد إلى جدول MyCinemaUser.
+     *
+     * @param user المستخدم المراد إضافته
      */
     @Insert
     void insertUser(MyCinemaUser user);
 
     /**
      * updateUser
-     * تحديث بيانات مستخدم موجود, لازم keyId يكون موجود عشان Room يعرف اي سجل يحدث
      *
-     * @param user كائن المستخدم بعد التعديل
+     * تعدّل بيانات مستخدم موجود في الجدول.
+     * يعتمد التعديل على المفتاح الأساسي keyId.
+     *
+     * @param user المستخدم بعد التعديل
      */
     @Update
     void updateUser(MyCinemaUser user);
 
     /**
      * deleteUser
-     * حذف مستخدم من قاعدة البيانات
      *
-     * @param user كائن المستخدم المراد حذفه
+     * تحذف مستخدم من قاعدة البيانات.
+     *
+     * @param user المستخدم المراد حذفه
      */
     @Delete
     void deleteUser(MyCinemaUser user);
 
     /**
      * getAllUsers
-     * جلب كل المستخدمين المخزنين في جدول MyCinemaUser
+     *
+     * تجلب جميع المستخدمين المخزنين في جدول MyCinemaUser.
      *
      * @return قائمة بجميع المستخدمين
      */
@@ -68,42 +68,46 @@ public interface MyCinemaUserQuery {
 
     /**
      * getUserById
-     * جلب مستخدم واحد حسب keyId
      *
-     * @param id المفتاح الاساسي للمستخدم
-     * @return المستخدم اذا موجود, او null اذا مش موجود
+     * تجلب مستخدم واحد حسب المفتاح الأساسي keyId.
+     *
+     * @param id رقم المستخدم داخل Room
+     * @return المستخدم إذا كان موجودًا، أو null إذا لم يوجد
      */
     @Query("SELECT * FROM MyCinemaUser WHERE keyId = :id LIMIT 1")
     MyCinemaUser getUserById(long id);
 
     /**
      * getUserByEmail
-     * جلب مستخدم واحد حسب البريد الالكتروني
      *
-     * @param email ايميل المستخدم
-     * @return المستخدم اذا موجود, او null اذا مش موجود
+     * تجلب مستخدم واحد حسب البريد الإلكتروني.
+     *
+     * @param email البريد الإلكتروني للمستخدم
+     * @return المستخدم إذا كان موجودًا، أو null إذا لم يوجد
      */
     @Query("SELECT * FROM MyCinemaUser WHERE email = :email LIMIT 1")
     MyCinemaUser getUserByEmail(String email);
 
     /**
      * login
-     * استعلام تسجيل دخول محلي عبر مطابقة الايميل والباسورد
      *
-     * ملاحظة
-     * هذا استعلام محلي فقط على Room, مش Firebase
+     * تفحص تسجيل الدخول محليًا داخل Room.
+     * تبحث عن مستخدم يملك نفس البريد الإلكتروني وكلمة المرور.
      *
-     * @param email ايميل المستخدم
+     * @param email البريد الإلكتروني
      * @param password كلمة المرور
-     * @return المستخدم اذا كانت البيانات مطابقة, او null اذا فشلت المطابقة
+     * @return المستخدم إذا كانت البيانات صحيحة، أو null إذا كانت غير صحيحة
      */
     @Query("SELECT * FROM MyCinemaUser WHERE email = :email AND password = :password LIMIT 1")
     MyCinemaUser login(String email, String password);
 
+    /**
+     * getFavoriteUsers
+     *
+     * تجلب جميع المستخدمين الذين تم وضعهم في المفضلة.
+     *
+     * @return قائمة المستخدمين المفضلين
+     */
     @Query("SELECT * FROM MyCinemaUser WHERE is_favorite = 1")
     List<MyCinemaUser> getFavoriteUsers();
-
-
-
-
 }

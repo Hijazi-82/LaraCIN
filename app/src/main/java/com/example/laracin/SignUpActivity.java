@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
-import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,223 +27,192 @@ import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * SignUpActivity
- * شاشة تسجيل حساب جديد
  *
-         * المسؤوليات
- * 1 قراءة الايميل والباسورد من الواجهة
- * 2 التحقق من صحة المدخلات
- * 3 إنشاء مستخدم جديد على Firebase Authentication
- * 4 عند النجاح, تخزين سجل المستخدم محليا داخل Room Database
- * 5 عرض رسائل نجاح او فشل للمستخدم
+ * شاشة إنشاء حساب جديد.
+ *
+ * وظيفة الشاشة:
+ * 1. قراءة البريد الإلكتروني وكلمة المرور من المستخدم.
+ * 2. التحقق من صحة المدخلات.
+ * 3. إنشاء حساب جديد في Firebase Authentication.
+ * 4. حفظ المستخدم في Room Database.
+ * 5. حفظ المستخدم في Firebase Realtime Database.
+ * 6. نقل المستخدم إلى شاشة إنشاء البروفايل.
  */
-    public class SignUpActivity extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity {
+    // حقول إدخال البريد الإلكتروني وكلمة المرور
+    private TextInputEditText etEmail2 , etPassword2;
+    // نص للانتقال إلى شاشة تسجيل الدخول
+    private TextView tvSignIn;
+    // كائن FirebaseAuth المسؤول عن إنشاء الحساب
+    private FirebaseAuth auth;
+private Button button ;
+    /**
+     * onCreate
+     *
+     * يتم استدعاؤها عند فتح شاشة التسجيل.
+     * داخلها يتم ربط عناصر الواجهة، تهيئة Firebase،
+     * وتجهيز أزرار التسجيل والانتقال لتسجيل الدخول.
+     *
+     * @param savedInstanceState يحفظ حالة الشاشة عند إعادة إنشائها
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        /**
-         * etEmail2 و etPassword2
-         * حقول ادخال الايميل والباسورد في واجهة التسجيل
-         */
-        private TextInputEditText etEmail2, etPassword2;
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_sign_up);
 
-        /**
-         * tvSignIn
-         * TextView قابل للنقر, ينقل المستخدم لشاشة تسجيل الدخول بدل التسجيل
-         */
-        private TextView tvSignIn;
+        // ضبط الحواف حتى لا تدخل العناصر تحت أشرطة النظام
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+        // تهيئة Firebase Authentication
+        auth = FirebaseAuth.getInstance();
+        // ربط عناصر الواجهة
+        etEmail2 = findViewById(R.id.eiEmail2);
+        etPassword2 = findViewById(R.id.edPassword2);
+        tvSignIn = findViewById(R.id.tvSignIn);
+        // عند الضغط على زر التسجيل يتم فحص البيانات وإنشاء الحساب
+        findViewById(R.id.button).setOnClickListener(v -> validateAndInsertRecord());
+        // الانتقال إلى شاشة تسجيل الدخول
+        tvSignIn.setOnClickListener(v -> {
+            Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
+            startActivity(intent);
+            finish();
+        });
+    }
 
+    /**
+     * validateAndInsertRecord
+     *
+     * تفحص البريد الإلكتروني وكلمة المرور.
+     * إذا كانت البيانات صحيحة، يتم إنشاء حساب جديد في Firebase.
+     * عند نجاح التسجيل، يتم إنشاء كائن MyCinemaUser وحفظه في Room وFirebase Database.
+     *
+     * @return true إذا كانت المدخلات صحيحة، false إذا وُجد خطأ في المدخلات
+     */
+    private boolean validateAndInsertRecord() {
 
-        /**
-         * auth
-         * كائن FirebaseAuth المسؤول عن عمليات التسجيل على Firebase
-         */
-        private FirebaseAuth auth;
+        String email = etEmail2.getText().toString().trim();
+        String password = etPassword2.getText().toString().trim();
 
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
+        boolean isValid = true;
 
-            // تفعيل edge to edge عشان الواجهة تتعامل صح مع system bars
-            EdgeToEdge.enable(this);
-
-            // تحميل واجهة شاشة التسجيل
-            setContentView(R.layout.activity_sign_up);
-
-            // ضبط padding حسب شريط الحالة والتنقل, عشان العناصر تضل واضحة ومش ملزوقة بالحواف
-            ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-                return insets;
-            });
-
-            // تهيئة FirebaseAuth
-            auth = FirebaseAuth.getInstance();
-
-            // ربط عناصر الواجهة بالمتغيرات
-            etEmail2 = findViewById(R.id.eiEmail2);
-            etPassword2 = findViewById(R.id.edPassword2);
-            tvSignIn = findViewById(R.id.tvSignIn);
-
-            /**
-             * زر التسجيل
-             * عند النقر:
-             * 1 يتحقق من صحة المدخلات
-             * 2 يبدأ عملية التسجيل على Firebase
-             * 3 ينتقل لشاشة SaveProfileActivity حسب الكود الحالي
-             */
-            findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    validateAndInsertRecord();
-
-                }
-            });
-
-            /**
-             * نص تسجيل الدخول
-             * عند النقر ينقل المستخدم لشاشة signInActivity
-             * * onClick
-             *  * يتم استدعاؤها لما المستخدم ينقر على View مرتبط بالـ listener
-             *  *
-             *  * @param v الـ View اللي انكبس فعليا, ممكن يكون زر او TextView او اي عنصر واجهة
-             *  *
-             *  * الوظيفة داخل هذا الحدث
-             *  * - فتح شاشة تسجيل الدخول signInActivity
-             *  * - اغلاق شاشة SignUpActivity عشان زر الرجوع ما يرجع المستخدم للتسجيل
-             *  */
-
-            tvSignIn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
-                    startActivity(intent);
-                    finish();
-
-                }
-            });
+        // فحص أن البريد غير فارغ
+        if (TextUtils.isEmpty(email)) {
+            etEmail2.setError("Email is required");
+            isValid = false;
         }
 
-        /**
-         * validateAndInsertRecord
-         *
-         * الهدف
-         * التحقق من صحة المدخلات ثم تسجيل المستخدم في Firebase, وبعدها تخزينه في Room عند النجاح
-         *
-         * خطوات العمل
-         * 1 قراءة الايميل والباسورد من TextInputEditText
-         * 2 فحص الايميل فاضي ولا لا
-         * 3 فحص صيغة الايميل عبر Patterns.EMAIL_ADDRESS
-         * 4 فحص طول الباسورد (اقل من 6 يعتبر غير صالح)
-         * 5 اذا المدخلات سليمة, يبدأ createUserWithEmailAndPassword
-         * 6 داخل onComplete
-         *    - اذا نجاح: ينشئ MyCinemaUser ويحفظه في Room, ويعرض Toast نجاح
-         *    - اذا فشل: يعرض Toast فشل, ويحط رسالة الخطأ على حقل الايميل
-         *
-         * ملاحظة
-         * القيمة الراجعة من الدالة ترجع صحة المدخلات فقط
-         * نجاح التسجيل على Firebase يتحدد لاحقا داخل onComplete
-         *
-         * @return true اذا المدخلات سليمة, false اذا في اخطاء تحقق
-         */
-        private boolean validateAndInsertRecord() {
+        // فحص صيغة البريد الإلكتروني
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail2.setError("Invalid email");
+            isValid = false;
+        }
 
-            // قراءة المدخلات مع trim لتفادي مسافات بالبداية او النهاية
-            String email = etEmail2.getText().toString().trim();
-            String password = etPassword2.getText().toString().trim();
+        // فحص طول كلمة المرور
+        if (password.length() < 6) {
+            etPassword2.setError("Password must be at least 6 characters long");
+            isValid = false;
+        }
 
-            boolean isValid = true;
+        if (!isValid) {
+            return false;
+        }
 
-            // فحص ان الايميل مش فاضي
-            if (TextUtils.isEmpty(email)) {
-                etEmail2.setError("Email is required");
-                isValid = false;
-            }
+        // إنشاء حساب جديد في Firebase Authentication
+        auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
 
-            // فحص صيغة الايميل
-            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                etEmail2.setError("Invalid email");
-                isValid = false;
-            }
+                    /**
+                     * onComplete
+                     *
+                     * يتم استدعاؤها بعد انتهاء محاولة إنشاء الحساب في Firebase.
+                     * إذا نجحت العملية، يتم حفظ بيانات المستخدم ونقله إلى شاشة البروفايل.
+                     */
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
 
-            // فحص طول الباسورد
-            if (password.length() < 6) {
-                etPassword2.setError("Password must be at least 6 characters long");
-                isValid = false;
-            }
+                        if (task.isSuccessful()) {
 
-            // اذا البيانات سليمة, يبدأ تسجيل المستخدم على Firebase
-            if (isValid) {
+                            // إنشاء كائن مستخدم جديد
+                            MyCinemaUser myuser = new MyCinemaUser();
+                            myuser.setEmail(email);
+                            myuser.setPassword(password);
+                            myuser.setRole("myuser");
 
-                auth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-
-                            /**
-                             * onComplete
-                             * يتم استدعاؤها بعد انتهاء طلب Firebase
-                             * task يحمل نتيجة العملية
-                             */
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-
-                                // نجاح عملية التسجيل على Firebase
-                                if (task.isSuccessful()) {
-
-                                    // إنشاء كائن المستخدم لتخزينه محليا في Room
-                                    MyCinemaUser myuser = new MyCinemaUser();
-                                    myuser.setEmail(email);
-                                    myuser.setPassword(password);
-                                    myuser.setRole("myuser");
-                                   myuser.setKey( task.getResult().getUser().getUid());
-                                    saveOrUpdateUserToFirebase(myuser);
-
-                                    // إدخال المستخدم في قاعدة البيانات المحلية
-                                    AppDatabase.getDb(SignUpActivity.this)
-                                            .myCinemaUserQuery()
-                                            .insertUser(myuser);
-
-                                    Toast.makeText(SignUpActivity.this,
-                                            "Signing up Succeeded",
-                                            Toast.LENGTH_SHORT).show();
-
-                                    // اغلاق الشاشة بعد نجاح العملية
-                                    Intent intent = new Intent(SignUpActivity.this, SaveProfileActivity.class);
-                                    startActivity(intent);
-                                    finish();
-
-                                } else {
-
-                                    // فشل عملية التسجيل
-                                    Toast.makeText(SignUpActivity.this,
-                                            "Signing up Failed",
-                                            Toast.LENGTH_SHORT).show();
-
-                                    // عرض سبب الفشل على حقل الايميل
-                                    etEmail2.setError(task.getException().getMessage());
-                                }
+                            // حفظ UID من Firebase كمفتاح للمستخدم
+                            if (task.getResult() != null && task.getResult().getUser() != null) {
+                                myuser.setKey(task.getResult().getUser().getUid());
                             }
-                        });
-            }
 
-            return isValid;
-        }
+                            // حفظ المستخدم في Firebase Realtime Database
+                            saveOrUpdateUserToFirebase(myuser);
+
+                            // حفظ المستخدم في Room Database
+                            AppDatabase.getDb(SignUpActivity.this)
+                                    .myCinemaUserQuery()
+                                    .insertUser(myuser);
+
+                            Toast.makeText(SignUpActivity.this,
+                                    "Signing up Succeeded",
+                                    Toast.LENGTH_SHORT).show();
+
+                            // الانتقال إلى شاشة إنشاء البروفايل
+                            Intent intent = new Intent(SignUpActivity.this, SaveProfileActivity.class);
+                            startActivity(intent);
+                            finish();
+
+                        } else {
+
+                            Toast.makeText(SignUpActivity.this,
+                                    "Signing up Failed",
+                                    Toast.LENGTH_SHORT).show();
+
+                            if (task.getException() != null) {
+                                etEmail2.setError(task.getException().getMessage());
+                            }
+                        }
+                    }
+                });
+
+        return true;
+    }
+    /**
+     * saveOrUpdateUserToFirebase
+     *
+     * تحفظ بيانات المستخدم في Firebase Realtime Database داخل المسار users.
+     * إذا لم يكن للمستخدم key، يتم إنشاء key جديد.
+     *
+     * @param user المستخدم المراد حفظه في Firebase
+     */
     private void saveOrUpdateUserToFirebase(MyCinemaUser user) {
-        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("users");
-        String key="";
-        if(user.getKey()==null || user.getKey().isEmpty())
-        {
+
+        DatabaseReference myRef = FirebaseDatabase
+                .getInstance()
+                .getReference("users");
+
+        String key = "";
+
+        // إذا لم يكن هناك key، يتم إنشاء key جديد
+        if (user.getKey() == null || user.getKey().isEmpty()) {
             key = myRef.push().getKey();
             user.setKey(key);
         }
 
-
-
         myRef.child(user.getKey()).setValue(user).addOnCompleteListener(fbTask -> {
+
             if (fbTask.isSuccessful()) {
-                Toast.makeText(getApplicationContext(), "User Saved Successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),
+                        "User Saved Successfully",
+                        Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getApplicationContext(), "Saving Failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),
+                        "Saving Failed",
+                        Toast.LENGTH_SHORT).show();
             }
-
-
         });
     }
-
 }

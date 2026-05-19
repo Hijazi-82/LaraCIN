@@ -4,69 +4,31 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import com.google.android.material.textfield.TextInputEditText;
-
 import java.io.Serializable;
-
-@Entity
 
 /**
  * MyCinemaUser
- * موديل يمثل مستخدم التطبيق, ويستخدم ك entity داخل Room
  *
- * الهدف
- * تخزين معلومات المستخدم الاساسية, ومعلومات البروفايل المتعلقة بالشغل داخل قاعدة بيانات محلية
+ * Entity يمثل مستخدم داخل التطبيق.
  *
- * الحقول
- * keyId
- * - مفتاح اساسي داخل Room
- * - autoGenerate يعني Room بتولد رقم تلقائي لكل سجل جديد
- *
- * fullName
- * - الاسم الكامل للمستخدم
- * - مخزن في الجدول باسم full_Name عبر ColumnInfo
- *
- * email و password
- * - بيانات تسجيل الدخول
- *
- * phone
- * - رقم هاتف المستخدم
- *
- * role
- * - دور المستخدم او تخصصه, مثال مصور, مونتير, ممثل, الخ
- *
- * portfolio
- * - رابط او وصف للبورتفوليو
- *
- * experienceYears
- * - عدد سنوات الخبرة, رقم صحيح
- *
- * skills
- * - نص يمثل مهارات المستخدم, مثال مونتاج, اضاءة, Final Cut Pro
- *
- * workName
- * - اسم العمل الذي يريد المستخدم عرضه
- *
- * workType
- * - نوع العمل, مثال تمثيل, تصوير, مونتاج
- *
- * workDescription
- * - وصف مختصر للعمل
- *
- * workLink
- * - رابط العمل, مثال YouTube, Drive, Portfolio
- *
- * ملاحظة
- * الكلاس يحتوي getters و setters لكل حقل, و toString لطباعة محتوى الكائن للتشخيص
+ * وظيفة الكلاس:
+ * 1. تخزين بيانات تسجيل الدخول.
+ * 2. تخزين بيانات البروفايل مثل الاسم، الهاتف، الدور والخبرة.
+ * 3. تخزين بيانات روابط الأعمال.
+ * 4. حفظ حالة المستخدم إذا كان مضافًا للمفضلة.
+ * 5. استخدامه داخل Room Database و Firebase.
  */
+@Entity
 public class MyCinemaUser implements Serializable {
 
-    // Primary key لقاعدة Room, يتم توليده تلقائيا
+    // المفتاح الأساسي داخل Room، ويتم توليده تلقائيًا
     @PrimaryKey(autoGenerate = true)
     public long keyId;
+
+    // مفتاح خارجي يستخدم غالبًا مع Firebase
     public String key;
 
-    // الاسم الكامل, اسم العمود في الجدول full_Name
+    // الاسم الكامل للمستخدم، ويتم تخزينه في Room باسم full_Name
     @ColumnInfo(name = "full_Name")
     public String fullName;
 
@@ -82,19 +44,20 @@ public class MyCinemaUser implements Serializable {
     // عدد سنوات الخبرة
     public int experienceYears;
 
-    // المهارات كنص
+    // مهارات المستخدم
     public String skills;
 
-    // بيانات روابط الأعمال
+    // بيانات رابط العمل
     public String workName;
     public String workType;
     public String workDescription;
     public String workLink;
 
+    // هل المستخدم مضاف إلى المفضلة أم لا
     @ColumnInfo(name = "is_favorite")
     private boolean favorite;
 
-    // NEW FOR ITEM STAR
+    // Getter و Setter لحالة المفضلة
     public boolean isFavorite() {
         return favorite;
     }
@@ -103,7 +66,7 @@ public class MyCinemaUser implements Serializable {
         this.favorite = favorite;
     }
 
-    // getters و setters
+    // Getters و Setters الأساسية
 
     public long getKeyId() {
         return keyId;
@@ -111,6 +74,14 @@ public class MyCinemaUser implements Serializable {
 
     public void setKeyId(long keyId) {
         this.keyId = keyId;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getFullName() {
@@ -177,15 +148,7 @@ public class MyCinemaUser implements Serializable {
         this.skills = skills;
     }
 
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    // getters و setters الخاصة بروابط الأعمال
+    // Getters و Setters الخاصة بروابط الأعمال
 
     public String getWorkName() {
         return workName;
@@ -221,7 +184,9 @@ public class MyCinemaUser implements Serializable {
 
     /**
      * toString
-     * مفيد للتجربة والتشخيص, يعرض كل الحقول كنص واحد
+     *
+     * تعرض محتوى الكائن كنص.
+     * مفيدة أثناء الفحص والتجربة لمعرفة القيم المخزنة داخل المستخدم.
      */
     @Override
     public String toString() {

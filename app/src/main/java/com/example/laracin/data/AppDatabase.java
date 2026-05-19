@@ -9,52 +9,60 @@ import androidx.room.RoomDatabase;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemaUser;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery;
 
-
-
 /**
  * AppDatabase
- * قاعدة بيانات Room الرئيسية للتطبيق
  *
- * الفكرة
- * - تعريف ال entities اللي بدها تنخزن محليا, هون MyCinemaUser
- * - تعريف ال DAO اللي بنستخدمه للاستعلام والادخال, هون MyCinemaUserQuery
- * - توفير Singleton instance من قاعدة البيانات عبر getDb عشان ما تنبني اكثر من مرة
+ * قاعدة بيانات Room الرئيسية في التطبيق.
  *
- * ملاحظات مهمة عن الاعدادات الحالية
- * - version = 3 رقم نسخة قاعدة البيانات, لازم يزيد لما يتغير ال schema
- * - fallbackToDestructiveMigration يعني اذا صار تغيير بالنسخة بدون migration
- *   بيحذف البيانات القديمة وبعيد بناء الجداول
- * - allowMainThreadQueries يسمح باستعلامات على ال main thread, سهل للتجربة
- *   بس مش مفضل لتطبيق فعلي لانه ممكن يعلق الواجهة
+ * وظيفة الكلاس:
+ * 1. تعريف الجداول المستخدمة في قاعدة البيانات المحلية.
+ * 2. ربط Entity مثل MyCinemaUser مع Room.
+ * 3. توفير DAO للتعامل مع بيانات المستخدمين.
+ * 4. إنشاء نسخة واحدة فقط من قاعدة البيانات باستخدام Singleton.
  */
 @Database(entities = {MyCinemaUser.class}, version = 4)
 public abstract class AppDatabase extends RoomDatabase {
 
-    // Singleton instance
+    // نسخة واحدة ثابتة من قاعدة البيانات
     private static AppDatabase db;
 
     /**
      * myCinemaUserQuery
-     * DAO للوصول لعمليات المستخدمين, insert, select, update, delete حسب تعريفك داخل MyCinemaUserQuery
+     *
+     * ترجع DAO الخاص بجدول MyCinemaUser.
+     * من خلاله يمكن تنفيذ عمليات مثل:
+     * insert, update, delete, select.
+     *
+     * @return MyCinemaUserQuery
      */
     public abstract MyCinemaUserQuery myCinemaUserQuery();
 
     /**
      * getDb
-     * بترجع نفس نسخة قاعدة البيانات كل مرة
      *
-     * @param context سياق التطبيق او الاكتفتي
-     * @return AppDatabase instance
+     * ترجع نسخة قاعدة البيانات.
+     * إذا لم تكن موجودة، يتم إنشاؤها لأول مرة.
+     * إذا كانت موجودة، يتم إرجاع نفس النسخة السابقة.
+     *
+     * @param context سياق التطبيق أو الشاشة
+     * @return نسخة AppDatabase
      */
     public static AppDatabase getDb(Context context) {
 
-        // بناء قاعدة البيانات اول مرة فقط
+        // إنشاء قاعدة البيانات فقط إذا لم تكن موجودة
         if (db == null) {
-            db = Room.databaseBuilder(context, AppDatabase.class, "HijaziDatabase")
-                    // اذا ما في migration, احذف وابني من جديد
+            db = Room.databaseBuilder(
+                            context,
+                            AppDatabase.class,
+                            "HijaziDatabase"
+                    )
+                    // عند تغيير نسخة قاعدة البيانات بدون Migration، يتم حذف القديم وبناء الجديد
                     .fallbackToDestructiveMigration()
-                    // السماح بالاستعلام على ال main thread (غير مفضل للانتاج)
+
+                    // يسمح بتنفيذ أوامر Room على Main Thread، مناسب للتجربة وليس مفضلًا للتطبيقات الكبيرة
                     .allowMainThreadQueries()
+
+                    // بناء قاعدة البيانات
                     .build();
         }
 

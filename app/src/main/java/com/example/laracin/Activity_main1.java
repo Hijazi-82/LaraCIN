@@ -22,46 +22,52 @@ import com.google.firebase.database.ValueEventListener;
 
 /**
  * Activity_main1
- * شاشة تعرض ListView للمستخدمين باستخدام Adapter مخصص
  *
- * المسؤوليات
- * 1 تهيئة الواجهة activity_main1
- * 2 ربط ListView بالـ Adapter
- * 3 عند الرجوع للشاشة onResume, تحديث محتوى القائمة حسب البيانات
+ * شاشة تعرض قائمة المستخدمين داخل ListView.
  *
- * ملاحظة
- * جلب المستخدمين من Room موجود لكنه معلق حاليا, لذلك القائمة لن تمتلئ ببيانات
+ * وظيفة الشاشة:
+ * 1. ربط الواجهة activity_main1 مع الكود.
+ * 2. إنشاء Adapter مخصص لعرض عناصر MyCinemaUser.
+ * 3. عرض المستخدمين المخزنين في Room Database.
+ * 4. تحتوي أيضًا على دالة جاهزة لجلب المستخدمين من Firebase.
  */
 public class Activity_main1 extends AppCompatActivity {
 
-    // ListView لعرض المستخدمين
+    // ListView لعرض المستخدمين داخل الشاشة
     private ListView listusers;
 
-    // Adapter مخصص لعرض عناصر المستخدمين داخل ListView
+    // Adapter يربط بيانات المستخدمين مع تصميم العنصر actor_item_layout
     private MyCinemAdapter adapteruser;
 
+    /**
+     * onCreate
+     *
+     * يتم استدعاؤها عند فتح الشاشة.
+     * داخلها يتم ربط عناصر الواجهة، إنشاء الـ Adapter،
+     * وربطه مع الـ ListView.
+     *
+     * @param savedInstanceState يحفظ حالة الشاشة عند إعادة إنشائها
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // تفعيل edge to edge وتحميل الواجهة
+        // تفعيل عرض Edge To Edge
         EdgeToEdge.enable(this);
+
+        // ربط الكلاس بملف تصميم الشاشة
         setContentView(R.layout.activity_main1);
 
-        // ربط ListView من الواجهة
+        // ربط ListView من ملف XML
         listusers = findViewById(R.id.listusers);
 
-        /**
-         * إنشاء Adapter
-         * - this سياق الشاشة الحالية
-         * - R.layout.actor_item_layout هو layout لكل عنصر داخل القائمة
-         */
+        // إنشاء Adapter لعرض المستخدمين داخل القائمة
         adapteruser = new MyCinemAdapter(this, R.layout.actor_item_layout);
 
-        // ربط الـ ListView بالـ Adapter
+        // ربط الـ Adapter مع الـ ListView
         listusers.setAdapter(adapteruser);
 
-        // ضبط padding حسب system bars
+        // ضبط الحواف حتى لا تدخل عناصر الشاشة تحت أشرطة النظام
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -71,58 +77,77 @@ public class Activity_main1 extends AppCompatActivity {
 
     /**
      * onResume
-     * يتم استدعاؤها كل مرة الشاشة ترجع للواجهة
      *
-     * اللي بيصير حاليا
-     * 1 تفريغ بيانات الـ adapter
-     * 2 تحديث الواجهة notifyDataSetChanged
-     *
-     * ملاحظة
-     * سطر جلب البيانات من Room معلق
-     * لو بدك القائمة تمتلئ لازم تفك التعليق عن addAll وتجيب البيانات
+     * يتم استدعاؤها كل مرة ترجع فيها الشاشة للواجهة.
+     * هنا يتم تفريغ القائمة القديمة، ثم جلب المستخدمين من Room
+     * وعرضهم من جديد داخل ListView.
      */
     @Override
     protected void onResume() {
         super.onResume();
 
-        // تفريغ العناصر الحالية
+        // تفريغ العناصر القديمة من الـ Adapter
         adapteruser.clear();
 
-        // جلب المستخدمين من Room واضافتهم للـ adapter (معلق حاليا)
+        // جلب جميع المستخدمين من Room وإضافتهم إلى القائمة
         adapteruser.addAll(AppDatabase.getDb(this).myCinemaUserQuery().getAllUsers());
 
-        // اعلام الـ ListView انه البيانات تغيرت
+        // تحديث عرض القائمة بعد تغيير البيانات
         adapteruser.notifyDataSetChanged();
     }
-    //todo add load data from firebase
 
     /**
-     * جلب البيانات من Firebase Realtime Database
+     * loadDataFromFirebase
+     *
+     * دالة تجلب المستخدمين من Firebase Realtime Database
+     * من المسار users، ثم تعرضهم داخل ListView.
      */
     private void loadDataFromFirebase() {
-        // الوصول لمرجع "users" في قاعدة البيانات
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+
+        // مرجع users داخل Firebase
+        DatabaseReference usersRef = FirebaseDatabase
+                .getInstance()
+                .getReference("users");
 
         usersRef.addValueEventListener(new ValueEventListener() {
+
+            /**
+             * onDataChange
+             *
+             * يتم استدعاؤها عند وصول البيانات من Firebase
+             * أو عند حدوث تغيير عليها.
+             */
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                // تفريغ القائمة قبل إضافة البيانات الجديدة
                 adapteruser.clear();
+
+                // المرور على جميع المستخدمين داخل users
                 for (DataSnapshot data : snapshot.getChildren()) {
-                    // تحويل البيانات من Firebase إلى كائن MyCinemaUser
+
                     MyCinemaUser user = data.getValue(MyCinemaUser.class);
+
                     if (user != null) {
                         adapteruser.add(user);
                     }
                 }
-                // تحديث القائمة
-                adapteruser.notifyDataSetChanged();}
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(Activity_main1.this, "فشل جلب البيانات: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                // تحديث القائمة بعد إضافة المستخدمين
+                adapteruser.notifyDataSetChanged();
             }
 
-                });
+            /**
+             * onCancelled
+             *
+             * يتم استدعاؤها إذا فشلت قراءة البيانات من Firebase.
+             */
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(Activity_main1.this,
+                        "فشل جلب البيانات: " + error.getMessage(),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
-
 }

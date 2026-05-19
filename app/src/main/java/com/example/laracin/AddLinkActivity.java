@@ -13,26 +13,19 @@ import androidx.appcompat.app.AppCompatActivity;
 /**
  * AddLinkActivity
  *
- * شاشة إضافة رابط عمل جديد
+ * شاشة إضافة رابط عمل جديد.
  *
- * الهدف من الشاشة
- * - تخلي المستخدم يدخل معلومات عمل جديد
- * - تتأكد إن الحقول المطلوبة مش فاضية
- * - ترجع البيانات للشاشة السابقة عن طريق Intent
- *
- * الحقول الموجودة
- * - etWorkName اسم العمل
- * - etWorkType نوع العمل
- * - etWorkDescription وصف العمل
- * - etWorkLink رابط العمل
- *
- * الأزرار
- * - btnBackToLinks للرجوع للشاشة السابقة
- * - btnSaveLink لحفظ البيانات وإرجاعها
+ * وظيفة الشاشة:
+ * 1. إدخال اسم العمل.
+ * 2. إدخال نوع العمل.
+ * 3. إدخال وصف قصير للعمل.
+ * 4. إدخال رابط خارجي للعمل.
+ * 5. فحص أن الحقول المطلوبة غير فارغة.
+ * 6. إرجاع البيانات إلى الشاشة السابقة WorkActivity.
  */
 public class AddLinkActivity extends AppCompatActivity {
 
-    // زر الرجوع للشاشة السابقة
+    // زر الرجوع إلى الشاشة السابقة
     private ImageView btnBackToLinks;
 
     // حقول إدخال بيانات العمل
@@ -44,14 +37,22 @@ public class AddLinkActivity extends AppCompatActivity {
     // زر حفظ الرابط
     private Button btnSaveLink;
 
+    /**
+     * onCreate
+     *
+     * يتم استدعاؤها عند فتح شاشة إضافة الرابط.
+     * داخلها يتم ربط عناصر الواجهة، وتجهيز زر الرجوع وزر الحفظ.
+     *
+     * @param savedInstanceState يحفظ حالة الشاشة عند إعادة إنشائها
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // تحميل واجهة الشاشة
+        // ربط الكلاس بملف تصميم الشاشة
         setContentView(R.layout.activity_add_link);
 
-        // ربط عناصر الواجهة بالمتغيرات
+        // ربط عناصر الواجهة مع المتغيرات
         btnBackToLinks = findViewById(R.id.btnBackToLinks);
         etWorkName = findViewById(R.id.etWorkName);
         etWorkType = findViewById(R.id.etWorkType);
@@ -59,51 +60,66 @@ public class AddLinkActivity extends AppCompatActivity {
         etWorkLink = findViewById(R.id.etWorkLink);
         btnSaveLink = findViewById(R.id.btnSaveLink);
 
-        // الرجوع للشاشة السابقة
+        // الرجوع إلى الشاشة السابقة بدون حفظ
         btnBackToLinks.setOnClickListener(v -> finish());
 
-        // حفظ الرابط وإرجاع البيانات للشاشة السابقة
-        btnSaveLink.setOnClickListener(v -> {
+        // حفظ بيانات الرابط وإرجاعها إلى WorkActivity
+        btnSaveLink.setOnClickListener(v -> saveLinkData());
+    }
 
-            String workName = etWorkName.getText().toString().trim();
-            String workType = etWorkType.getText().toString().trim();
-            String workDescription = etWorkDescription.getText().toString().trim();
-            String workLink = etWorkLink.getText().toString().trim();
+    /**
+     * saveLinkData
+     *
+     * تقرأ بيانات الرابط من الحقول.
+     * إذا كان أحد الحقول فارغًا، تعرض رسالة خطأ.
+     * إذا كانت البيانات صحيحة، ترجعها إلى الشاشة السابقة باستخدام Intent.
+     */
+    private void saveLinkData() {
 
-            if (TextUtils.isEmpty(workName)) {
-                etWorkName.setError("Enter work name");
-                etWorkName.requestFocus();
-                return;
-            }
+        String workName = etWorkName.getText().toString().trim();
+        String workType = etWorkType.getText().toString().trim();
+        String workDescription = etWorkDescription.getText().toString().trim();
+        String workLink = etWorkLink.getText().toString().trim();
 
-            if (TextUtils.isEmpty(workType)) {
-                etWorkType.setError("Enter work type");
-                etWorkType.requestFocus();
-                return;
-            }
+        // فحص اسم العمل
+        if (TextUtils.isEmpty(workName)) {
+            etWorkName.setError("Enter work name");
+            etWorkName.requestFocus();
+            return;
+        }
 
-            if (TextUtils.isEmpty(workDescription)) {
-                etWorkDescription.setError("Enter description");
-                etWorkDescription.requestFocus();
-                return;
-            }
+        // فحص نوع العمل
+        if (TextUtils.isEmpty(workType)) {
+            etWorkType.setError("Enter work type");
+            etWorkType.requestFocus();
+            return;
+        }
 
-            if (TextUtils.isEmpty(workLink)) {
-                etWorkLink.setError("Paste link here");
-                etWorkLink.requestFocus();
-                return;
-            }
+        // فحص وصف العمل
+        if (TextUtils.isEmpty(workDescription)) {
+            etWorkDescription.setError("Enter description");
+            etWorkDescription.requestFocus();
+            return;
+        }
 
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra("workName", workName);
-            resultIntent.putExtra("workType", workType);
-            resultIntent.putExtra("workDescription", workDescription);
-            resultIntent.putExtra("workLink", workLink);
+        // فحص رابط العمل
+        if (TextUtils.isEmpty(workLink)) {
+            etWorkLink.setError("Paste link here");
+            etWorkLink.requestFocus();
+            return;
+        }
 
-            setResult(RESULT_OK, resultIntent);
-            Toast.makeText(this, "Link saved", Toast.LENGTH_SHORT).show();
+        // تجهيز Intent لإرجاع البيانات إلى WorkActivity
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("workName", workName);
+        resultIntent.putExtra("workType", workType);
+        resultIntent.putExtra("workDescription", workDescription);
+        resultIntent.putExtra("workLink", workLink);
 
-            finish();
-        });
+        // إرسال النتيجة وإغلاق الشاشة
+        setResult(RESULT_OK, resultIntent);
+
+        Toast.makeText(this, "Link saved", Toast.LENGTH_SHORT).show();
+        finish();
     }
 }

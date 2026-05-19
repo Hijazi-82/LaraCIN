@@ -24,95 +24,85 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 /**
- * signInActivity
- * شاشة تسجيل الدخول
+ * SignInActivity
  *
- * المسؤوليات
- * 1 قراءة الايميل والباسورد من الواجهة
- * 2 التحقق من صحة المدخلات
- * 3 التحقق من بيانات المستخدم محليا من Room
- * 4 تسجيل الدخول عبر Firebase Authentication
- * 5 عند النجاح, نقل المستخدم للشاشة الرئيسية
+ * شاشة تسجيل الدخول في التطبيق.
+ *
+ * وظيفة الشاشة:
+ * 1. قراءة البريد الإلكتروني وكلمة المرور من المستخدم.
+ * 2. التحقق من صحة المدخلات.
+ * 3. فحص وجود المستخدم داخل قاعدة البيانات المحلية Room.
+ * 4. تسجيل الدخول باستخدام Firebase Authentication.
+ * 5. نقل المستخدم إلى شاشة HomeActivity عند نجاح الدخول.
  */
 public class SignInActivity extends AppCompatActivity {
 
-    // حقول الادخال
-    private EditText etEmail;
-    private EditText etPassword;
+    // حقول إدخال البريد الإلكتروني وكلمة المرور
+    private EditText etEmail , etPassword;
 
-    // زر تسجيل الدخول
+    // زر تنفيذ تسجيل الدخول
     private Button btnSignIn;
 
-    // نص ينقل المستخدم لشاشة التسجيل
+    // نص للانتقال إلى شاشة إنشاء حساب جديد
     private TextView tvAsk;
 
-    // FirebaseAuth لعملية تسجيل الدخول
+    // كائن FirebaseAuth المسؤول عن تسجيل الدخول عبر Firebase
     private FirebaseAuth auth;
 
+    /**
+     * onCreate
+     *
+     * يتم استدعاؤها عند فتح شاشة تسجيل الدخول.
+     * داخلها يتم ربط عناصر الواجهة، تهيئة Firebase،
+     * وتجهيز أزرار التنقل وتسجيل الدخول.
+     *
+     * @param savedInstanceState يحفظ حالة الشاشة عند إعادة إنشائها
+     */
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // تفعيل edge to edge وتحديد واجهة الشاشة
+        // تفعيل عرض Edge To Edge
         EdgeToEdge.enable(this);
+
+        // ربط الكلاس بملف التصميم
         setContentView(R.layout.activity_sign_in);
 
-        // تهيئة Firebase
+        // تهيئة Firebase Authentication
         auth = FirebaseAuth.getInstance();
 
-        // ضبط padding حسب system bars لتحسين عرض الواجهة
+        // ضبط أبعاد الشاشة حتى لا تدخل العناصر تحت شريط النظام
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        // ربط عناصر الواجهة
+        // ربط عناصر الواجهة مع المتغيرات
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnSignIn = findViewById(R.id.btnSignIn);
         tvAsk = findViewById(R.id.tvAsk);
 
-        /**
-         * tvAsk
-         * عند النقر, ينقل المستخدم لشاشة إنشاء حساب جديد
-         */
+        // الانتقال إلى شاشة التسجيل عند الضغط على النص
         tvAsk.setOnClickListener(v -> {
             Intent intent = new Intent(SignInActivity.this, SignUpActivity.class);
             startActivity(intent);
         });
 
-        /**
-         * btnSignIn
-         * عند النقر, يبدأ التحقق من المدخلات ومحاولة تسجيل الدخول
-         */
-        btnSignIn.setOnClickListener(v -> {
-            validateInputs();
-        });
+        // عند الضغط على زر الدخول يتم فحص المدخلات ومحاولة تسجيل الدخول
+        btnSignIn.setOnClickListener(v -> validateInputs());
     }
 
     /**
      * validateInputs
      *
-     * الهدف
-     * التحقق من صحة الايميل والباسورد, ثم التأكد من وجود المستخدم في Room,
-     * ثم تسجيل الدخول على Firebase
+     * تفحص البريد الإلكتروني وكلمة المرور.
+     * إذا كانت المدخلات صحيحة، يتم فحص المستخدم في Room.
+     * بعد ذلك يتم تنفيذ تسجيل الدخول عبر Firebase.
      *
-     * خطوات العمل
-     * 1 قراءة الايميل والباسورد من الحقول
-     * 2 فحص صيغة الايميل وطول الباسورد
-     * 3 جلب المستخدم من Room بواسطة الايميل
-     * 4 مقارنة كلمة المرور المدخلة مع المخزنة في Room
-     * 5 اذا كل شيء صحيح, تنفيذ signInWithEmailAndPassword على Firebase
-     * 6 داخل onComplete
-     *    - اذا نجاح: Toast نجاح ثم الانتقال للشاشة الرئيسية Activity_main1
-     *    - اذا فشل: Toast فشل ثم عرض رسالة الخطأ على حقل الايميل
-     *
-     * ملاحظة
-     * isAllOK يعبر عن صحة المدخلات + نجاح تحقق Room قبل محاولة Firebase
-     *
-     * @return true اذا كل فحوصات التحقق نجحت قبل Firebase, false اذا في اخطاء
+     * @return true إذا كانت الفحوصات الأولية صحيحة، false إذا وُجد خطأ
      */
     private boolean validateInputs() {
 
@@ -121,62 +111,41 @@ public class SignInActivity extends AppCompatActivity {
 
         boolean isAllOK = true;
 
-        // التحقق من صحة الايميل
+        // فحص البريد الإلكتروني
         if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             etEmail.setError("Enter a valid email");
             isAllOK = false;
         }
 
-        // التحقق من كلمة المرور
+        // فحص كلمة المرور
         if (password.isEmpty() || password.length() < 6) {
             etPassword.setError("Password must be at least 6 characters");
             isAllOK = false;
         }
 
-        /**
-         * التحقق من Room
-         * يتم جلب المستخدم عبر الايميل, اذا غير موجود او كلمة المرور غير مطابقة
-         * يتم اعتبار تسجيل الدخول غير صالح
-         */
+        // فحص المستخدم داخل Room حسب البريد الإلكتروني
         MyCinemaUser user =
                 AppDatabase.getDb(this).myCinemaUserQuery().getUserByEmail(email);
 
-        if (user == null || !user.getPassword().equals(password)) {
+        // التأكد أن المستخدم موجود محليًا وأن كلمة المرور مطابقة
+        if (user == null || user.getPassword() == null || !user.getPassword().equals(password)) {
             etEmail.setError("Invalid email or password");
             etPassword.setError("Invalid email or password");
             isAllOK = false;
         }
 
-        /**
-         * Firebase Login
-         * يتم تنفيذ تسجيل الدخول فقط اذا كل الفحوصات السابقة سليمة
-         * النتيجة النهائية تأتي داخل onComplete
-         * * تسجيل دخول Firebase
-         *  *
-         *  * الفكرة العامة
-         *  * - هذا البلوك لا ينفذ الا اذا isAllOK = true
-         *  *   يعني الفحوصات السابقة للايميل والباسورد نجحت حسب منطقك
-         *  *
-         *  * auth.signInWithEmailAndPassword
-         *  * - يرسل طلب تسجيل دخول الى Firebase Authentication بالايميل والباسورد
-         *  * - العملية غير فورية, يعني بتشتغل بشكل async
-         *  *
-         *  * addOnCompleteListener
-         *  * - بنضيف listener عشان نستقبل نتيجة الطلب لما يخلص
-         *  * - onComplete بتنادى مرة واحدة بعد ما Firebase يرجع نتيجة نجاح او فشل
-         *  *
-         *  * task
-         *  * - يمثل نتيجة عملية تسجيل الدخول
-         *  * - task.isSuccessful يعني تسجيل الدخول تم بنجاح
-         *  */
-
-
-
+        // إذا كل الفحوصات صحيحة، يتم تسجيل الدخول عبر Firebase
         if (isAllOK) {
-
             auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
 
+                        /**
+                         * onComplete
+                         *
+                         * يتم استدعاؤها بعد انتهاء محاولة تسجيل الدخول في Firebase.
+                         * إذا نجح الدخول ينتقل المستخدم إلى HomeActivity.
+                         * إذا فشل، تظهر رسالة خطأ.
+                         */
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
 
@@ -186,10 +155,9 @@ public class SignInActivity extends AppCompatActivity {
                                         "Signing in Succeeded",
                                         Toast.LENGTH_SHORT).show();
 
-                                // الانتقال للشاشة الرئيسية
-                                Intent i = new Intent(SignInActivity.this,
-                                        HomeActivity.class);
-                                startActivity(i);
+                                Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
+                                startActivity(intent);
+                                finish();
 
                             } else {
 
@@ -197,8 +165,9 @@ public class SignInActivity extends AppCompatActivity {
                                         "Signing in Failed",
                                         Toast.LENGTH_SHORT).show();
 
-                                // عرض سبب الفشل على حقل الايميل
-                                etEmail.setError(task.getException().getMessage());
+                                if (task.getException() != null) {
+                                    etEmail.setError(task.getException().getMessage());
+                                }
                             }
                         }
                     });

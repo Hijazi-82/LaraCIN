@@ -13,34 +13,33 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.laracin.FavoriteActivity;
 import com.example.laracin.ProfileActivity;
 import com.example.laracin.R;
 import com.example.laracin.data.AppDatabase;
 
 /**
- * MyCinemUserAdapter
- * Adapter مخصص لعرض عناصر MyCinemaUser داخل ListView
+ * MyCinemAdapter
  *
- * الفكرة
- * - الكلاس بيمد ArrayAdapter عشان يقدر يعرض قائمة من MyCinemaUser
- * - getView مسؤولة عن بناء او إعادة استخدام view لكل صف داخل القائمة
- * - يتم تعبئة عناصر الصف مثل الاسم والايميل والدور داخل TextViews
+ * Adapter مخصص لعرض مستخدمي التطبيق داخل ListView.
  *
- * itemLayout
- * - رقم ال layout resource للعنصر الواحد داخل القائمة, مثال actor_item_layout
+ * وظيفة الكلاس:
+ * 1. عرض بيانات كل مستخدم داخل item خاص.
+ * 2. تعبئة الاسم، الدور، والمهارات داخل عناصر الواجهة.
+ * 3. فتح صفحة ProfileActivity عند الضغط على زر الملاحظة/القلم.
+ * 4. إضافة أو إزالة المستخدم من المفضلة عند الضغط على النجمة.
  */
-
 public class MyCinemAdapter extends ArrayAdapter<MyCinemaUser> {
 
-    // layout الخاص بكل item داخل القائمة
+    // ملف تصميم العنصر الواحد داخل القائمة
     private int itemLayout;
 
     /**
-     * constructor
+     * Constructor
      *
-     * @param context سياق الشاشة اللي بتعرض القائمة
-     * @param resource layout resource لكل عنصر داخل القائمة
+     * يستقبل الشاشة الحالية وملف تصميم العنصر الواحد.
+     *
+     * @param context الشاشة التي يتم عرض القائمة داخلها
+     * @param resource ملف XML الخاص بشكل كل item
      */
     public MyCinemAdapter(@NonNull Context context, int resource) {
         super(context, resource);
@@ -49,69 +48,75 @@ public class MyCinemAdapter extends ArrayAdapter<MyCinemaUser> {
 
     /**
      * getView
-     * يتم استدعاؤها لكل عنصر في القائمة لتجهيزه وعرضه داخل ListView
      *
-     * @param position موقع العنصر بالقائمة
-     * @param convertView view جاهزة لاعادة الاستخدام, اذا null يتم عمل inflate جديدة
-     * @param parent الـ ListView نفسه
-     * @return view جاهزة للعرض
+     * يتم استدعاؤها لكل عنصر داخل ListView.
+     * تربط بيانات المستخدم مع عناصر التصميم actor_item_layout.
+     *
+     * @param position مكان المستخدم داخل القائمة
+     * @param convertView View قديمة يمكن إعادة استخدامها
+     * @param parent القائمة الأصلية ListView
+     * @return View جاهزة للعرض داخل القائمة
      */
-
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        // اذا ما في view جاهزة, بنبني واحدة جديدة من itemLayout
+        // إذا لم تكن هناك View جاهزة، يتم إنشاء واحدة جديدة من ملف التصميم
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(itemLayout, parent, false);
+            convertView = LayoutInflater
+                    .from(getContext())
+                    .inflate(itemLayout, parent, false);
         }
 
-        // جلب المستخدم الحالي حسب position
+        // جلب المستخدم حسب موقعه في القائمة
         MyCinemaUser user = getItem(position);
 
-        // ربط عناصر الواجهة داخل item layout
+        // ربط عناصر الواجهة داخل item
         ImageView imgUser = convertView.findViewById(R.id.imCinemaUser);
 
         TextView tvUserName = convertView.findViewById(R.id.tvUserName);
         TextView tvUserRole = convertView.findViewById(R.id.tvUserRole);
         TextView tvltmNote = convertView.findViewById(R.id.tvltmNote);
 
-        // ازرار داخل كل item, موجودة بالlayout لكنها غير مستخدمة حاليا بالكود
         ImageButton imgBtnSend = convertView.findViewById(R.id.imgBtnSend);
         ImageButton imgBtnCall = convertView.findViewById(R.id.imgBtnCall);
         ImageButton imgBtnNote = convertView.findViewById(R.id.imgBtnNote);
         ImageButton imgBtnStar = convertView.findViewById(R.id.imgBtnStar);
 
-        imgBtnNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i=new Intent(getContext(), ProfileActivity.class);
-                i.putExtra("cinmaUser",user);
-                getContext().startActivity(i);
-            }
-        });
-
-        /**
-         * تعبئة البيانات
-         * - العنوان: الاسم الكامل
-         * - النص: الايميل
-         * - الملاحظة: الدور
-         */
         if (user != null) {
+
+            // تعبئة بيانات المستخدم في الواجهة
             tvUserName.setText(user.getFullName());
             tvUserRole.setText(user.getRole());
             tvltmNote.setText(user.getSkills());
-// FOR ITEM STAR
+
+            // فتح صفحة البروفايل الخاصة بالمستخدم
+            imgBtnNote.setOnClickListener(v -> {
+                Intent intent = new Intent(getContext(), ProfileActivity.class);
+                intent.putExtra("cinmaUser", user);
+                getContext().startActivity(intent);
+            });
+
+            // ضبط شكل النجمة حسب حالة المفضلة
+            if (user.isFavorite()) {
+                imgBtnStar.setImageResource(android.R.drawable.btn_star_big_on);
+            } else {
+                imgBtnStar.setImageResource(android.R.drawable.btn_star_big_off);
+            }
+
+            // تغيير حالة المفضلة عند الضغط على النجمة
             imgBtnStar.setOnClickListener(v -> {
                 user.setFavorite(!user.isFavorite());
-                AppDatabase.getDb(getContext()).myCinemaUserQuery().updateUser(user);
+
+                AppDatabase.getDb(getContext())
+                        .myCinemaUserQuery()
+                        .updateUser(user);
 
                 if (user.isFavorite()) {
                     imgBtnStar.setImageResource(android.R.drawable.btn_star_big_on);
                 } else {
                     imgBtnStar.setImageResource(android.R.drawable.btn_star_big_off);
                 }
-
             });
         }
 

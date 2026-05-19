@@ -22,39 +22,32 @@ import java.util.List;
  *
  * Adapter مخصص لعرض روابط الأعمال داخل ListView.
  *
- * الهدف:
- * هذا الكلاس يربط بين بيانات روابط الأعمال الموجودة داخل MyCinemaUser
- * وبين ملف التصميم item_work.xml.
- *
- * كل item يعرض:
- * - اسم العمل
- * - نوع العمل
- * - وصف العمل
- * - رابط العمل
+ * وظيفة الكلاس:
+ * 1. ربط بيانات روابط الأعمال مع تصميم item_work.xml.
+ * 2. عرض اسم العمل، نوع العمل، وصف العمل، ورابط العمل.
+ * 3. فتح رابط العمل في المتصفح عند الضغط عليه.
  */
 public class MyLinksAdapter extends ArrayAdapter<MyCinemaUser> {
 
-    /**
-     * context
-     * يمثل الشاشة التي يعمل داخلها الـ Adapter.
-     */
+    // الشاشة أو الـ Activity التي يعمل داخلها الـ Adapter
     private final Context context;
 
-    /**
-     * resource
-     * يمثل ملف XML الخاص بشكل العنصر الواحد.
-     * غالبًا يكون R.layout.item_work.
-     */
+    // ملف XML الخاص بشكل العنصر الواحد داخل القائمة
     private final int resource;
 
     /**
-     * constructor
+     * Constructor
+     *
+     * يستقبل الشاشة الحالية، تصميم العنصر الواحد،
+     * وقائمة المستخدمين الذين لديهم روابط أعمال.
      *
      * @param context الشاشة الحالية
      * @param resource تصميم item الواحد داخل ListView
-     * @param objects قائمة المستخدمين الذين لديهم روابط أعمال
+     * @param objects قائمة المستخدمين الذين سيتم عرض روابط أعمالهم
      */
-    public MyLinksAdapter(@NonNull Context context, int resource, @NonNull List<MyCinemaUser> objects) {
+    public MyLinksAdapter(@NonNull Context context,
+                          int resource,
+                          @NonNull List<MyCinemaUser> objects) {
         super(context, resource, objects);
         this.context = context;
         this.resource = resource;
@@ -64,49 +57,72 @@ public class MyLinksAdapter extends ArrayAdapter<MyCinemaUser> {
      * getView
      *
      * يتم استدعاؤها لكل عنصر داخل ListView.
-     * تربط بيانات MyCinemaUser مع item_work.xml.
+     * تربط بيانات MyCinemaUser مع عناصر التصميم item_work.xml.
+     *
+     * @param position موقع العنصر داخل القائمة
+     * @param convertView View قديمة يمكن إعادة استخدامها
+     * @param parent القائمة الأصلية
+     * @return View جاهزة للعرض
      */
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(int position,
+                        @Nullable View convertView,
+                        @NonNull ViewGroup parent) {
 
+        // إنشاء View جديدة إذا لم تكن هناك View جاهزة لإعادة الاستخدام
         if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(resource, parent, false);
+            convertView = LayoutInflater
+                    .from(context)
+                    .inflate(resource, parent, false);
         }
 
+        // ربط عناصر الواجهة داخل item_work.xml
         TextView tvWorkName = convertView.findViewById(R.id.tvWorkName);
         TextView tvWorkType = convertView.findViewById(R.id.tvWorkType);
         TextView tvWorkDescription = convertView.findViewById(R.id.tvWorkDescription);
         TextView tvWorkLink = convertView.findViewById(R.id.tvWorkLink);
 
+        // جلب المستخدم الحالي حسب موقعه في القائمة
         MyCinemaUser user = getItem(position);
 
         if (user != null) {
 
+            // عرض بيانات العمل داخل العنصر
             tvWorkName.setText(user.getWorkName());
             tvWorkType.setText(user.getWorkType());
             tvWorkDescription.setText(user.getWorkDescription());
             tvWorkLink.setText(user.getWorkLink());
 
-            tvWorkLink.setOnClickListener(v -> {
-                String link = user.getWorkLink();
-
-                if (link == null || link.trim().isEmpty()) {
-                    Toast.makeText(context, "No link available", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                link = link.trim();
-
-                if (!link.startsWith("http://") && !link.startsWith("https://")) {
-                    link = "https://" + link;
-                }
-
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
-                context.startActivity(intent);
-            });
+            // فتح الرابط في المتصفح عند الضغط عليه
+            tvWorkLink.setOnClickListener(v -> openWorkLink(user.getWorkLink()));
         }
 
         return convertView;
+    }
+
+    /**
+     * openWorkLink
+     *
+     * تفحص رابط العمل، ثم تفتحه في المتصفح.
+     * إذا لم يبدأ الرابط بـ http أو https، يتم إضافة https تلقائيًا.
+     *
+     * @param link رابط العمل المراد فتحه
+     */
+    private void openWorkLink(String link) {
+
+        if (link == null || link.trim().isEmpty()) {
+            Toast.makeText(context, "No link available", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        link = link.trim();
+
+        if (!link.startsWith("http://") && !link.startsWith("https://")) {
+            link = "https://" + link;
+        }
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+        context.startActivity(intent);
     }
 }
