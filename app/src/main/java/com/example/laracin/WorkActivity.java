@@ -188,7 +188,7 @@ public class WorkActivity extends AppCompatActivity {
 
         // الانتقال إلى شاشة البيت
         navHome.setOnClickListener(v -> {
-            Intent intent = new Intent(WorkActivity.this, Activity_main1.class);
+            Intent intent = new Intent(WorkActivity.this, HomeActivity.class);
             startActivity(intent);
             finish();
         });
@@ -202,7 +202,7 @@ public class WorkActivity extends AppCompatActivity {
 
         // الانتقال إلى شاشة البروفايل / تعديل البروفايل
         navProfile.setOnClickListener(v -> {
-            Intent intent = new Intent(WorkActivity.this, SaveProfileActivity.class);
+            Intent intent = new Intent(WorkActivity.this, ProfileActivity.class);
             startActivity(intent);
             finish();
         });

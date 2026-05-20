@@ -38,6 +38,9 @@ import java.io.Serializable;
  * portfolio
  * - رابط او وصف للبورتفوليو
  *
+ * profileImageUri
+ * - رابط/مسار صورة البروفايل المختارة من الجهاز
+ *
  * experienceYears
  * - عدد سنوات الخبرة, رقم صحيح
  *
@@ -78,6 +81,9 @@ public class MyCinemaUser implements Serializable {
     public String phone;
     public String role;
     public String portfolio;
+
+    // صورة البروفايل كـ Uri نصي
+    public String profileImageUri;
 
     // عدد سنوات الخبرة
     public int experienceYears;
@@ -161,6 +167,14 @@ public class MyCinemaUser implements Serializable {
         this.portfolio = portfolio;
     }
 
+    public String getProfileImageUri() {
+        return profileImageUri;
+    }
+
+    public void setProfileImageUri(String profileImageUri) {
+        this.profileImageUri = profileImageUri;
+    }
+
     public int getExperienceYears() {
         return experienceYears;
     }
@@ -234,6 +248,7 @@ public class MyCinemaUser implements Serializable {
                 ", phone='" + phone + '\'' +
                 ", role='" + role + '\'' +
                 ", portfolio='" + portfolio + '\'' +
+                ", profileImageUri='" + profileImageUri + '\'' +
                 ", experienceYears=" + experienceYears +
                 ", skills='" + skills + '\'' +
                 ", workName='" + workName + '\'' +

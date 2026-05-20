@@ -63,7 +63,7 @@ public class FavoriteActivity extends AppCompatActivity {
          * حاليا موجه إلى Activity_main1
          */
         navHome.setOnClickListener(v -> {
-            Intent intent = new Intent(FavoriteActivity.this, Activity_main1.class);
+            Intent intent = new Intent(FavoriteActivity.this, HomeActivity.class);
             startActivity(intent);
             finish();
         });

@@ -1,7 +1,11 @@
 package com.example.laracin;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -67,8 +71,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
 
-
-
         btnViewWorks.setOnClickListener(v -> {
             Intent intent = new Intent(ProfileActivity.this, WorkActivity.class);
             startActivity(intent);
@@ -100,40 +102,34 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void loadUserData() {
-//        String currentEmail = null;
-//
-//        if (auth.getCurrentUser() != null) {
-//            currentEmail = auth.getCurrentUser().getEmail();
-//        }
-//
-//        if (TextUtils.isEmpty(currentEmail)) {
-//            return;
-//        }
-//        Intent i=getIntent();
-        //MyCinemaUser user = i.getParcelableExtra("cinmaUser");
+
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("users");
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
         myRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 MyCinemaUser user = snapshot.getValue(MyCinemaUser.class);
+
                 if (user == null) {
                     Toast.makeText(ProfileActivity.this, "user error", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-
-                    //btnEditProfile.setVisibility(View.GONE);
 
                 btnEditProfile.setOnClickListener(v -> {
                     Intent intent = new Intent(ProfileActivity.this, SaveProfileActivity.class);
                     intent.putExtra("cinmaUser", user);
                     startActivity(intent);
                 });
+
                 tvName.setText(user.getFullName() != null ? user.getFullName() : "");
                 tvRole.setText(user.getRole() != null ? user.getRole() : "");
                 tvBio.setText(user.getSkills() != null ? user.getSkills() : "");
                 tvWorksCount.setText("0");
+
+                if (user.getProfileImageUri() != null && !user.getProfileImageUri().isEmpty()) {
+                    imgProfile.setImageBitmap(stringToBitmap(user.getProfileImageUri()));
+                }
             }
 
             @Override
@@ -141,6 +137,17 @@ public class ProfileActivity extends AppCompatActivity {
 
             }
         });
+    }
+    private Bitmap stringToBitmap(String imageString) {
+        if (imageString == null || imageString.isEmpty()) {
+            return null;
+        }
 
+        try {
+            byte[] decodedString = Base64.decode(imageString, Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

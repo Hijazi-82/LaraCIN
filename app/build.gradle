@@ -42,6 +42,8 @@ dependencies {
     implementation libs.firebase.database
     implementation libs.firebase.storage
     implementation libs.firebase.firestore
+    implementation libs.firebase.ai
+    implementation "com.google.guava:guava:31.0.1-android"
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
@@ -58,5 +60,6 @@ dependencies {
     testImplementation "androidx.room:room-testing:$room_version"
     // optional - Paging 3 Integration
     implementation "androidx.room:room-paging:$room_version"
+
 
 }

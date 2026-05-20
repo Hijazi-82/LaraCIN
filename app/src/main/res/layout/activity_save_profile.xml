@@ -112,7 +112,6 @@
             app:hintTextColor="#AFAFAF">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etPortfolio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textUri"
@@ -156,7 +155,7 @@
 
         <!-- Sign Up Button -->
         <Button
-            android:id="@+id/btSignUp"
+            android:id="@+id/btCreatePro"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="32dp"
@@ -166,7 +165,7 @@
 
         <!-- Link to Sign In -->
         <TextView
-            android:id="@+id/tvSignIn"
+            android:id="@+id/tvIfSignIn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"

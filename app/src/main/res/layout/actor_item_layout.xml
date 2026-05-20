@@ -17,17 +17,19 @@
         android:layout_height="wrap_content">
 
         <!-- Main Image: Full Screen Width -->
+
+        <!-- User Info Section -->
         <ImageView
             android:id="@+id/imCinemaUser"
             android:layout_width="0dp"
             android:layout_height="220dp"
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
-        <!-- User Info Section -->
         <LinearLayout
             android:id="@+id/userInfoSection"
             android:layout_width="0dp"

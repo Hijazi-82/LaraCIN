@@ -2,6 +2,10 @@ package com.example.laracin.data.MyCinemaUserTable;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,11 +39,28 @@ public class MyCinemAdapter extends ArrayAdapter<MyCinemaUser> {
 
     // layout الخاص بكل item داخل القائمة
     private int itemLayout;
+    /**
+     * Decodes the image string and returns the corresponding Bitmap object.
+     *
+     * @param imageString the image string to decode
+     * @return the decoded Bitmap object
+     */
+    private Bitmap stringToBitmap(String imageString) {
+        if (imageString == null || imageString.isEmpty()) return null;
+        try {
+            byte[] decodedString = Base64.decode(imageString, Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
 
     /**
      * constructor
      *
-     * @param context سياق الشاشة اللي بتعرض القائمة
+     * @param context  سياق الشاشة اللي بتعرض القائمة
      * @param resource layout resource لكل عنصر داخل القائمة
      */
     public MyCinemAdapter(@NonNull Context context, int resource) {
@@ -51,12 +72,11 @@ public class MyCinemAdapter extends ArrayAdapter<MyCinemaUser> {
      * getView
      * يتم استدعاؤها لكل عنصر في القائمة لتجهيزه وعرضه داخل ListView
      *
-     * @param position موقع العنصر بالقائمة
+     * @param position    موقع العنصر بالقائمة
      * @param convertView view جاهزة لاعادة الاستخدام, اذا null يتم عمل inflate جديدة
-     * @param parent الـ ListView نفسه
+     * @param parent      الـ ListView نفسه
      * @return view جاهزة للعرض
      */
-
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -70,38 +90,43 @@ public class MyCinemAdapter extends ArrayAdapter<MyCinemaUser> {
         MyCinemaUser user = getItem(position);
 
         // ربط عناصر الواجهة داخل item layout
-        ImageView imgUser = convertView.findViewById(R.id.imCinemaUser);
+        ImageView imCinemaUser = convertView.findViewById(R.id.imCinemaUser);
 
         TextView tvUserName = convertView.findViewById(R.id.tvUserName);
         TextView tvUserRole = convertView.findViewById(R.id.tvUserRole);
         TextView tvltmNote = convertView.findViewById(R.id.tvltmNote);
 
-        // ازرار داخل كل item, موجودة بالlayout لكنها غير مستخدمة حاليا بالكود
         ImageButton imgBtnSend = convertView.findViewById(R.id.imgBtnSend);
         ImageButton imgBtnCall = convertView.findViewById(R.id.imgBtnCall);
         ImageButton imgBtnNote = convertView.findViewById(R.id.imgBtnNote);
         ImageButton imgBtnStar = convertView.findViewById(R.id.imgBtnStar);
 
-        imgBtnNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i=new Intent(getContext(), ProfileActivity.class);
-                i.putExtra("cinmaUser",user);
-                getContext().startActivity(i);
-            }
-        });
-
-        /**
-         * تعبئة البيانات
-         * - العنوان: الاسم الكامل
-         * - النص: الايميل
-         * - الملاحظة: الدور
-         */
         if (user != null) {
+
+            // تعبئة بيانات المستخدم
             tvUserName.setText(user.getFullName());
             tvUserRole.setText(user.getRole());
             tvltmNote.setText(user.getSkills());
-// FOR ITEM STAR
+            imCinemaUser.setImageBitmap(stringToBitmap(user.profileImageUri));
+
+            // عرض صورة المستخدم اذا كانت موجودة
+
+
+            // فتح صفحة البروفايل عند الضغط على زر القلم / الملاحظة
+            imgBtnNote.setOnClickListener(v -> {
+                Intent i = new Intent(getContext(), ProfileActivity.class);
+                i.putExtra("cinmaUser", user);
+                getContext().startActivity(i);
+            });
+
+            // ضبط شكل النجمة حسب حالة المستخدم
+            if (user.isFavorite()) {
+                imgBtnStar.setImageResource(android.R.drawable.btn_star_big_on);
+            } else {
+                imgBtnStar.setImageResource(android.R.drawable.btn_star_big_off);
+            }
+
+            // عند الضغط على النجمة يتم تغيير حالة المفضلة
             imgBtnStar.setOnClickListener(v -> {
                 user.setFavorite(!user.isFavorite());
                 AppDatabase.getDb(getContext()).myCinemaUserQuery().updateUser(user);
@@ -111,7 +136,6 @@ public class MyCinemAdapter extends ArrayAdapter<MyCinemaUser> {
                 } else {
                     imgBtnStar.setImageResource(android.R.drawable.btn_star_big_off);
                 }
-
             });
         }
 

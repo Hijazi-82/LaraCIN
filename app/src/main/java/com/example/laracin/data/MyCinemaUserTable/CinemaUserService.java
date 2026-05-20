@@ -35,20 +35,19 @@ public class CinemaUserService extends Service {
 
     private void saveUserToFirebase(MyCinemaUser user) {
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("users");
-        String key="";
-        if(user.getKey()==null || user.getKey().isEmpty())
-        {
+        String key = "";
+        if (user.getKey() == null || user.getKey().isEmpty()) {
             key = myRef.push().getKey();
             user.setKey(key);
         }
 
-
-
         myRef.child(user.getKey()).setValue(user).addOnCompleteListener(fbTask -> {
             if (fbTask.isSuccessful()) {
                 Toast.makeText(getApplicationContext(), "User Saved Successfully", Toast.LENGTH_SHORT).show();
-                stopSelf();
-                startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+                
+                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             } else {
                 Toast.makeText(getApplicationContext(), "Saving Failed", Toast.LENGTH_SHORT).show();
             }

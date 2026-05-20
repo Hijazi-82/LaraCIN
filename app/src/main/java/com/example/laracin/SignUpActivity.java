@@ -80,7 +80,7 @@ import com.google.firebase.database.FirebaseDatabase;
             // ربط عناصر الواجهة بالمتغيرات
             etEmail2 = findViewById(R.id.eiEmail2);
             etPassword2 = findViewById(R.id.edPassword2);
-            tvSignIn = findViewById(R.id.tvSignIn);
+            tvSignIn = findViewById(R.id.tvIfSignIn);
 
             /**
              * زر التسجيل
