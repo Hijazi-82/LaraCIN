@@ -103,11 +103,7 @@ public class ProfileActivity extends AppCompatActivity {
         // زر الرجوع
         btnBack.setOnClickListener(v -> finish());
 
-        // فتح شاشة الأعمال
-        btnViewWorks.setOnClickListener(v -> {
-            Intent intent = new Intent(ProfileActivity.this, WorkActivity.class);
-            startActivity(intent);
-        });
+
 
         // زر تعديل البروفايل
         btnEditProfile.setOnClickListener(v -> {
@@ -229,8 +225,8 @@ public class ProfileActivity extends AppCompatActivity {
         tvName.setText(user.getFullName() != null ? user.getFullName() : "");
         tvRole.setText(user.getRole() != null ? user.getRole() : "");
         tvBio.setText(user.getSkills() != null ? user.getSkills() : "");
-
         tvWorksCount.setText(String.valueOf(user.getWorkCount()));
+        
         // عرض صورة البروفايل بنفس طريقتك الحالية
         if (user.getProfileImageUri() != null && !user.getProfileImageUri().isEmpty()) {
             imgProfile.setImageBitmap(stringToBitmap(user.getProfileImageUri()));

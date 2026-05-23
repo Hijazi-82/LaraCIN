@@ -13,7 +13,6 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,12 +31,12 @@ import java.util.HashMap;
  * شاشة روابط الأعمال.
  *
  * وظيفة الشاشة:
- * 1. عرض روابط الأعمال الخاصة بالمستخدم الحالي من Firebase.
- * 2. إضافة رابط جديد عن طريق AddLinkActivity.
- * 3. حفظ الرابط داخل Firebase.
- * 4. البحث داخل الروابط حسب الاسم أو النوع أو الوصف.
- * 5. فتح الرابط عند الضغط العادي.
- * 6. حذف الرابط من Firebase عند الضغط المطوّل.
+ * 1. عرض كل الأعمال من كل المستخدمين.
+ * 2. إضافة رابط عمل جديد عن طريق AddLinkActivity.
+ * 3. حفظ الرابط الجديد تحت حساب المستخدم الحالي فقط.
+ * 4. تحديث عدد الأعمال workCount للمستخدم الحالي.
+ * 5. البحث داخل الأعمال حسب الاسم أو النوع أو الوصف أو الرابط.
+ * 6. فتح الرابط عند الضغط عليه.
  */
 public class WorkActivity extends AppCompatActivity {
 
@@ -53,9 +52,22 @@ public class WorkActivity extends AppCompatActivity {
     private SimpleAdapter adapter;
 
     private FirebaseAuth auth;
-    private DatabaseReference worksRef;
+
+    // مكان المستخدم الحالي الحقيقي داخل Firebase
     private DatabaseReference currentUserRef;
 
+    // مكان أعمال المستخدم الحالي فقط
+    private DatabaseReference worksRef;
+
+    // مفتاح المستخدم الحالي داخل users
+    private String currentUserKey;
+
+    /**
+     * addLinkLauncher
+     *
+     * يفتح AddLinkActivity وينتظر النتيجة.
+     * بعد رجوع البيانات، يحفظ العمل في Firebase.
+     */
     private final ActivityResultLauncher<Intent> addLinkLauncher =
             registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
@@ -92,12 +104,25 @@ public class WorkActivity extends AppCompatActivity {
         allLinksList = new ArrayList<>();
         filteredLinksList = new ArrayList<>();
 
+        /*
+         * هذا الـ Adapter يعرض العمل داخل item_work.xml.
+         * لازم يكون item_work.xml يحتوي:
+         * tvWorkName
+         * tvWorkType
+         * tvWorkDescription
+         * tvWorkLink
+         */
         adapter = new SimpleAdapter(
                 this,
                 filteredLinksList,
-                android.R.layout.simple_list_item_2,
-                new String[]{"workName", "workType"},
-                new int[]{android.R.id.text1, android.R.id.text2}
+                R.layout.item_work,
+                new String[]{"workName", "workType", "workDescription", "workLink"},
+                new int[]{
+                        R.id.tvWorkName,
+                        R.id.tvWorkType,
+                        R.id.tvWorkDescription,
+                        R.id.tvWorkLink
+                }
         );
 
         listProjectsLinks.setAdapter(adapter);
@@ -114,12 +139,27 @@ public class WorkActivity extends AppCompatActivity {
             openWorkLink(item.get("workLink"));
         });
 
+        /*
+         * حذف العمل:
+         * إذا العمل إلك، ينحذف.
+         * إذا العمل لشخص آخر، ما بنحذفه.
+         */
         listProjectsLinks.setOnItemLongClickListener((parent, view, position, id) -> {
+
             HashMap<String, String> item = filteredLinksList.get(position);
+
+            String ownerKey = item.get("ownerKey");
             String workId = item.get("workId");
 
-            if (workId != null && worksRef != null) {
-                deleteWorkFromFirebase(workId);
+            if (ownerKey == null || workId == null) {
+                Toast.makeText(this, "Cannot delete this work", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+
+            if (currentUserKey != null && currentUserKey.equals(ownerKey)) {
+                deleteWorkFromFirebase(ownerKey, workId);
+            } else {
+                Toast.makeText(this, "You can delete only your own works", Toast.LENGTH_SHORT).show();
             }
 
             return true;
@@ -128,6 +168,7 @@ public class WorkActivity extends AppCompatActivity {
         etProjectsSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // غير مستخدمة
             }
 
             @Override
@@ -137,6 +178,7 @@ public class WorkActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
+                // غير مستخدمة
             }
         });
 
@@ -166,64 +208,143 @@ public class WorkActivity extends AppCompatActivity {
     /**
      * prepareFirebaseReferences
      *
-     * تجهز مسار المستخدم الحالي في Firebase.
-     * كل الأعمال تحفظ تحت:
-     * users / uid / works
+     * تجهز مكان حفظ أعمال المستخدم الحالي.
+     *
+     * أولًا نحاول نلاقي البروفايل حسب الإيميل داخل users.
+     * إذا لقيناه، نحفظ الأعمال تحته.
+     *
+     * إذا ما لقيناه، نستعمل uid كحل احتياطي حتى لا تفشل الإضافة.
      */
     private void prepareFirebaseReferences() {
 
         if (auth.getCurrentUser() == null) {
             Toast.makeText(this, "No signed in user", Toast.LENGTH_SHORT).show();
+            loadAllWorksFromFirebase();
             return;
         }
 
+        String currentEmail = auth.getCurrentUser().getEmail();
         String uid = auth.getCurrentUser().getUid();
 
-        currentUserRef = FirebaseDatabase
+        DatabaseReference usersRef = FirebaseDatabase
                 .getInstance()
-                .getReference("users")
-                .child(uid);
+                .getReference("users");
 
-        worksRef = currentUserRef.child("works");
+        if (currentEmail == null || currentEmail.isEmpty()) {
+            useUidAsFallback(usersRef, uid, null);
+            return;
+        }
 
-        loadWorksFromFirebase();
+        usersRef.orderByChild("email")
+                .equalTo(currentEmail)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+
+                    if (snapshot.exists()) {
+
+                        for (DataSnapshot data : snapshot.getChildren()) {
+                            currentUserKey = data.getKey();
+                            currentUserRef = data.getRef();
+                            worksRef = currentUserRef.child("works");
+
+                            loadAllWorksFromFirebase();
+                            return;
+                        }
+                    }
+
+                    // إذا لم نجد البروفايل حسب الإيميل، نستعمل uid بدل ما نوقف الحفظ
+                    useUidAsFallback(usersRef, uid, currentEmail);
+
+                })
+                .addOnFailureListener(e -> {
+                    useUidAsFallback(usersRef, uid, currentEmail);
+                });
     }
 
     /**
-     * loadWorksFromFirebase
+     * useUidAsFallback
      *
-     * تجلب روابط الأعمال الخاصة بالمستخدم الحالي من Firebase.
+     * حل احتياطي:
+     * إذا لم نستطع إيجاد بروفايل المستخدم داخل users حسب الإيميل،
+     * نحفظ أعماله تحت users / uid.
      */
-    private void loadWorksFromFirebase() {
+    private void useUidAsFallback(DatabaseReference usersRef, String uid, String email) {
 
-        if (worksRef == null) {
-            return;
+        currentUserKey = uid;
+        currentUserRef = usersRef.child(uid);
+        worksRef = currentUserRef.child("works");
+
+        if (email != null) {
+            currentUserRef.child("email").setValue(email);
         }
 
-        worksRef.get().addOnSuccessListener(snapshot -> {
+        Toast.makeText(this, "Using current user account", Toast.LENGTH_SHORT).show();
+
+        loadAllWorksFromFirebase();
+    }
+
+    /**
+     * loadAllWorksFromFirebase
+     *
+     * تجلب كل الأعمال من كل المستخدمين.
+     *
+     * المسار:
+     * users / userKey / works / workId
+     */
+    private void loadAllWorksFromFirebase() {
+
+        DatabaseReference usersRef = FirebaseDatabase
+                .getInstance()
+                .getReference("users");
+
+        usersRef.get().addOnSuccessListener(snapshot -> {
 
             allLinksList.clear();
 
-            for (DataSnapshot data : snapshot.getChildren()) {
+            for (DataSnapshot userSnapshot : snapshot.getChildren()) {
 
-                String workId = data.getKey();
-                String workName = data.child("workName").getValue(String.class);
-                String workType = data.child("workType").getValue(String.class);
-                String workDescription = data.child("workDescription").getValue(String.class);
-                String workLink = data.child("workLink").getValue(String.class);
+                String ownerKey = userSnapshot.getKey();
+                String ownerName = userSnapshot.child("fullName").getValue(String.class);
 
-                HashMap<String, String> item = new HashMap<>();
-                item.put("workId", workId);
-                item.put("workName", workName);
-                item.put("workType", workType);
-                item.put("workDescription", workDescription);
-                item.put("workLink", workLink);
+                DataSnapshot worksSnapshot = userSnapshot.child("works");
 
-                allLinksList.add(item);
+                for (DataSnapshot workData : worksSnapshot.getChildren()) {
+
+                    String workId = workData.getKey();
+                    String workName = workData.child("workName").getValue(String.class);
+                    String workType = workData.child("workType").getValue(String.class);
+                    String workDescription = workData.child("workDescription").getValue(String.class);
+                    String workLink = workData.child("workLink").getValue(String.class);
+
+                    HashMap<String, String> item = new HashMap<>();
+
+                    item.put("ownerKey", ownerKey != null ? ownerKey : "");
+                    item.put("workId", workId != null ? workId : "");
+
+                    item.put("workName", workName != null ? workName : "");
+                    item.put("workType", workType != null ? workType : "");
+
+                    String descriptionText = "";
+
+                    if (ownerName != null && !ownerName.isEmpty()) {
+                        descriptionText += "By: " + ownerName;
+                    }
+
+                    if (workDescription != null && !workDescription.isEmpty()) {
+                        if (!descriptionText.isEmpty()) {
+                            descriptionText += "\n";
+                        }
+                        descriptionText += workDescription;
+                    }
+
+                    item.put("workDescription", descriptionText);
+                    item.put("workLink", workLink != null ? workLink : "");
+
+                    allLinksList.add(item);
+                }
             }
 
             filterLinks(etProjectsSearch.getText().toString().trim());
-            updateWorksCountInFirebase();
 
         }).addOnFailureListener(e -> {
             Toast.makeText(this, "Failed to load works", Toast.LENGTH_SHORT).show();
@@ -233,15 +354,15 @@ public class WorkActivity extends AppCompatActivity {
     /**
      * saveWorkToFirebase
      *
-     * تحفظ رابط عمل جديد في Firebase.
+     * تحفظ العمل الجديد تحت المستخدم الحالي فقط.
      */
     private void saveWorkToFirebase(String workName,
                                     String workType,
                                     String workDescription,
                                     String workLink) {
 
-        if (worksRef == null) {
-            Toast.makeText(this, "Firebase not ready", Toast.LENGTH_SHORT).show();
+        if (worksRef == null || currentUserRef == null) {
+            Toast.makeText(this, "User profile not ready", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -261,15 +382,22 @@ public class WorkActivity extends AppCompatActivity {
         worksRef.child(workId).setValue(workMap).addOnCompleteListener(task -> {
 
             if (task.isSuccessful()) {
+
                 Toast.makeText(this, "Work saved", Toast.LENGTH_SHORT).show();
 
-                // حفظ آخر عمل أيضًا داخل بيانات المستخدم للتوافق مع الكلاسات القديمة
+                /*
+                 * حفظ آخر عمل داخل بيانات المستخدم نفسه.
+                 * هذا فقط للتوافق مع الكود القديم عندك.
+                 */
                 currentUserRef.child("workName").setValue(workName);
                 currentUserRef.child("workType").setValue(workType);
                 currentUserRef.child("workDescription").setValue(workDescription);
                 currentUserRef.child("workLink").setValue(workLink);
 
-                loadWorksFromFirebase();
+                updateCurrentUserWorkCount();
+
+                // نعيد تحميل كل الأعمال حتى يظهر الرابط مباشرة
+                loadAllWorksFromFirebase();
 
             } else {
                 Toast.makeText(this, "Failed to save work", Toast.LENGTH_SHORT).show();
@@ -280,15 +408,25 @@ public class WorkActivity extends AppCompatActivity {
     /**
      * deleteWorkFromFirebase
      *
-     * تحذف رابط عمل من Firebase حسب workId.
+     * يحذف العمل إذا كان ملك المستخدم الحالي.
      */
-    private void deleteWorkFromFirebase(String workId) {
+    private void deleteWorkFromFirebase(String ownerKey, String workId) {
 
-        worksRef.child(workId).removeValue().addOnCompleteListener(task -> {
+        DatabaseReference workRef = FirebaseDatabase
+                .getInstance()
+                .getReference("users")
+                .child(ownerKey)
+                .child("works")
+                .child(workId);
+
+        workRef.removeValue().addOnCompleteListener(task -> {
 
             if (task.isSuccessful()) {
                 Toast.makeText(this, "Work deleted", Toast.LENGTH_SHORT).show();
-                loadWorksFromFirebase();
+
+                updateCurrentUserWorkCount();
+                loadAllWorksFromFirebase();
+
             } else {
                 Toast.makeText(this, "Failed to delete work", Toast.LENGTH_SHORT).show();
             }
@@ -296,15 +434,21 @@ public class WorkActivity extends AppCompatActivity {
     }
 
     /**
-     * updateWorksCountInFirebase
+     * updateCurrentUserWorkCount
      *
-     * تحفظ عدد الأعمال داخل بيانات المستخدم.
-     * لاحقًا ProfileActivity يقدر يعرض هذا الرقم.
+     * يحسب عدد أعمال المستخدم الحالي فقط،
+     * ويحفظه داخل:
+     * users / currentUserKey / workCount
      */
-    private void updateWorksCountInFirebase() {
-        if (currentUserRef != null) {
-            currentUserRef.child("workCount").setValue(allLinksList.size());
+    private void updateCurrentUserWorkCount() {
+
+        if (worksRef == null || currentUserRef == null) {
+            return;
         }
+
+        worksRef.get().addOnSuccessListener(snapshot -> {
+            currentUserRef.child("workCount").setValue(snapshot.getChildrenCount());
+        });
     }
 
     /**
@@ -332,7 +476,7 @@ public class WorkActivity extends AppCompatActivity {
     /**
      * filterLinks
      *
-     * تبحث داخل روابط الأعمال حسب الاسم أو النوع أو الوصف.
+     * تبحث داخل كل الأعمال المعروضة.
      */
     private void filterLinks(String query) {
 
@@ -358,9 +502,14 @@ public class WorkActivity extends AppCompatActivity {
                         ? item.get("workDescription").toLowerCase()
                         : "";
 
+                String workLink = item.get("workLink") != null
+                        ? item.get("workLink").toLowerCase()
+                        : "";
+
                 if (workName.contains(lowerQuery)
                         || workType.contains(lowerQuery)
-                        || workDescription.contains(lowerQuery)) {
+                        || workDescription.contains(lowerQuery)
+                        || workLink.contains(lowerQuery)) {
 
                     filteredLinksList.add(item);
                 }

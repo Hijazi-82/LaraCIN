@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,51 +16,37 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.laracin.FavoriteActivity;
 import com.example.laracin.ProfileActivity;
 import com.example.laracin.R;
-import com.example.laracin.data.AppDatabase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
- * MyCinemUserAdapter
- * Adapter مخصص لعرض عناصر MyCinemaUser داخل ListView
+ * MyCinemAdapter
  *
- * الفكرة
- * - الكلاس بيمد ArrayAdapter عشان يقدر يعرض قائمة من MyCinemaUser
- * - getView مسؤولة عن بناء او إعادة استخدام view لكل صف داخل القائمة
- * - يتم تعبئة عناصر الصف مثل الاسم والايميل والدور داخل TextViews
+ * Adapter مخصص لعرض المستخدمين داخل ListView.
  *
- * itemLayout
- * - رقم ال layout resource للعنصر الواحد داخل القائمة, مثال actor_item_layout
+ * الوظائف:
+ * 1. عرض صورة المستخدم واسمه ودوره ومهاراته.
+ * 2. فتح بروفايل المستخدم عند الضغط على زر القلم.
+ * 3. إضافة أو إزالة المستخدم من المفضلة الخاصة بالمستخدم الحالي.
+ *
+ * ملاحظة مهمة:
+ * المفضلة لا تحفظ داخل users/userKey/favorite
+ * بل تحفظ داخل:
+ * favorites/currentUserUid/userKey
+ * حتى تكون المفضلة خاصة بكل مستخدم.
  */
-
 public class MyCinemAdapter extends ArrayAdapter<MyCinemaUser> {
 
-    // layout الخاص بكل item داخل القائمة
+    // ملف تصميم العنصر الواحد داخل القائمة
     private int itemLayout;
-    /**
-     * Decodes the image string and returns the corresponding Bitmap object.
-     *
-     * @param imageString the image string to decode
-     * @return the decoded Bitmap object
-     */
-    private Bitmap stringToBitmap(String imageString) {
-        if (imageString == null || imageString.isEmpty()) return null;
-        try {
-            byte[] decodedString = Base64.decode(imageString, Base64.DEFAULT);
-            return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-
 
     /**
-     * constructor
+     * Constructor
      *
-     * @param context  سياق الشاشة اللي بتعرض القائمة
-     * @param resource layout resource لكل عنصر داخل القائمة
+     * @param context الشاشة التي تعرض القائمة
+     * @param resource ملف XML الخاص بشكل كل item
      */
     public MyCinemAdapter(@NonNull Context context, int resource) {
         super(context, resource);
@@ -70,26 +55,22 @@ public class MyCinemAdapter extends ArrayAdapter<MyCinemaUser> {
 
     /**
      * getView
-     * يتم استدعاؤها لكل عنصر في القائمة لتجهيزه وعرضه داخل ListView
      *
-     * @param position    موقع العنصر بالقائمة
-     * @param convertView view جاهزة لاعادة الاستخدام, اذا null يتم عمل inflate جديدة
-     * @param parent      الـ ListView نفسه
-     * @return view جاهزة للعرض
+     * يتم استدعاؤها لكل عنصر داخل ListView.
+     * تربط بيانات المستخدم مع عناصر actor_item_layout.
      */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        // اذا ما في view جاهزة, بنبني واحدة جديدة من itemLayout
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(itemLayout, parent, false);
+            convertView = LayoutInflater
+                    .from(getContext())
+                    .inflate(itemLayout, parent, false);
         }
 
-        // جلب المستخدم الحالي حسب position
         MyCinemaUser user = getItem(position);
 
-        // ربط عناصر الواجهة داخل item layout
         ImageView imCinemaUser = convertView.findViewById(R.id.imCinemaUser);
 
         TextView tvUserName = convertView.findViewById(R.id.tvUserName);
@@ -104,41 +85,94 @@ public class MyCinemAdapter extends ArrayAdapter<MyCinemaUser> {
         if (user != null) {
 
             // تعبئة بيانات المستخدم
-            tvUserName.setText(user.getFullName());
-            tvUserRole.setText(user.getRole());
-            tvltmNote.setText(user.getSkills());
-            imCinemaUser.setImageBitmap(stringToBitmap(user.profileImageUri));
+            tvUserName.setText(user.getFullName() != null ? user.getFullName() : "");
+            tvUserRole.setText(user.getRole() != null ? user.getRole() : "");
+            tvltmNote.setText(user.getSkills() != null ? user.getSkills() : "");
 
+            // عرض صورة المستخدم بنفس طريقة التخزين عندك: Base64 داخل profileImageUri
+            Bitmap bitmap = stringToBitmap(user.getProfileImageUri());
 
+            if (bitmap != null) {
+                imCinemaUser.setImageBitmap(bitmap);
+            } else {
+                imCinemaUser.setImageResource(android.R.drawable.sym_def_app_icon);
+            }
 
-
-            // فتح صفحة البروفايل عند الضغط على زر القلم / الملاحظة
+            // فتح بروفايل نفس المستخدم عند الضغط على القلم
             imgBtnNote.setOnClickListener(v -> {
-                Intent i = new Intent(getContext(), ProfileActivity.class);
-                i.putExtra("cinmaUser", user);
-                getContext().startActivity(i);
+                Intent intent = new Intent(getContext(), ProfileActivity.class);
+                intent.putExtra("cinmaUser", user);
+                getContext().startActivity(intent);
             });
 
-            // ضبط شكل النجمة حسب حالة المستخدم
+            // شكل النجمة حسب الحالة الحالية داخل القائمة
             if (user.isFavorite()) {
                 imgBtnStar.setImageResource(android.R.drawable.btn_star_big_on);
             } else {
                 imgBtnStar.setImageResource(android.R.drawable.btn_star_big_off);
             }
 
-            // عند الضغط على النجمة يتم تغيير حالة المفضلة
+            // حفظ المفضلة الخاصة بالمستخدم الحالي داخل Firebase
             imgBtnStar.setOnClickListener(v -> {
+
+                if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+                    return;
+                }
+
+                if (user.getKey() == null || user.getKey().isEmpty()) {
+                    return;
+                }
+
+                String currentUid = FirebaseAuth
+                        .getInstance()
+                        .getCurrentUser()
+                        .getUid();
+
                 user.setFavorite(!user.isFavorite());
-                AppDatabase.getDb(getContext()).myCinemaUserQuery().updateUser(user);
 
                 if (user.isFavorite()) {
+
                     imgBtnStar.setImageResource(android.R.drawable.btn_star_big_on);
+
+                    FirebaseDatabase.getInstance()
+                            .getReference("favorites")
+                            .child(currentUid)
+                            .child(user.getKey())
+                            .setValue(true);
+
                 } else {
+
                     imgBtnStar.setImageResource(android.R.drawable.btn_star_big_off);
+
+                    FirebaseDatabase.getInstance()
+                            .getReference("favorites")
+                            .child(currentUid)
+                            .child(user.getKey())
+                            .removeValue();
                 }
             });
         }
 
         return convertView;
+    }
+
+    /**
+     * stringToBitmap
+     *
+     * تحول الصورة من String Base64 إلى Bitmap
+     * حتى يتم عرضها داخل ImageView.
+     */
+    private Bitmap stringToBitmap(String imageString) {
+
+        if (imageString == null || imageString.isEmpty()) {
+            return null;
+        }
+
+        try {
+            byte[] decodedString = Base64.decode(imageString, Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
