@@ -2,6 +2,9 @@ package com.example.laracin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -10,42 +13,43 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.laracin.data.AppDatabase;
 import com.example.laracin.data.MyCinemaUserTable.MyCinemAdapter;
+import com.example.laracin.data.MyCinemaUserTable.MyCinemaUser;
+
+import java.util.ArrayList;
 
 /**
  * FavoriteActivity
  *
- * شاشة المفضلة
+ * شاشة المفضلة.
  *
- * الوظائف الأساسية
- * 1) عرض المستخدمين الذين تم وضع نجمة عليهم فقط
- * 2) تحديث القائمة كل مرة نرجع فيها للشاشة
- * 3) التنقل إلى شاشة أخرى عبر عناصر الـ navigation
+ * وظيفة الشاشة:
+ * 1. عرض المستخدمين الذين تم وضع نجمة عليهم.
+ * 2. البحث داخل المستخدمين المفضلين حسب الاسم أو الدور.
+ * 3. تحديث القائمة عند الرجوع للشاشة.
+ * 4. التنقل بين Home و Projects و Profile.
  */
 public class FavoriteActivity extends AppCompatActivity {
 
-    // القائمة التي ستعرض المستخدمين المفضلين
+    private EditText etFavoriteSearch;
     private ListView listFavoriteUsers;
 
-    // الأدابتر المسؤول عن عرض عناصر المستخدمين داخل القائمة
     private MyCinemAdapter adapteruser;
 
-    // عناصر الـ bottom navigation
     private TextView navHome;
     private TextView navProjects;
     private TextView navFavorite;
     private TextView navProfile;
 
+    private ArrayList<MyCinemaUser> allFavoriteUsers = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // تفعيل EdgeToEdge
         EdgeToEdge.enable(this);
-
-        // تحميل واجهة شاشة المفضلة
         setContentView(R.layout.activity_favorite);
 
-        // ربط عناصر الواجهة
+        etFavoriteSearch = findViewById(R.id.etFavoriteSearch);
         listFavoriteUsers = findViewById(R.id.listFavoriteUsers);
 
         navHome = findViewById(R.id.navHome);
@@ -53,21 +57,31 @@ public class FavoriteActivity extends AppCompatActivity {
         navFavorite = findViewById(R.id.navFavorite);
         navProfile = findViewById(R.id.navProfile);
 
-        // إنشاء الأدابتر وربطه بالـ ListView
         adapteruser = new MyCinemAdapter(this, R.layout.actor_item_layout);
         listFavoriteUsers.setAdapter(adapteruser);
 
-        /**
-         * navHome
-         * عند الضغط عليه ينتقل المستخدم إلى الشاشة المحددة
-         * حاليا موجه إلى Activity_main1
-         */
+        etFavoriteSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // غير مستخدمة
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterFavoriteUsers(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // غير مستخدمة
+            }
+        });
+
         navHome.setOnClickListener(v -> {
             Intent intent = new Intent(FavoriteActivity.this, HomeActivity.class);
             startActivity(intent);
             finish();
         });
-
 
         navProjects.setOnClickListener(v -> {
             Intent intent = new Intent(FavoriteActivity.this, WorkActivity.class);
@@ -76,7 +90,7 @@ public class FavoriteActivity extends AppCompatActivity {
         });
 
         navFavorite.setOnClickListener(v -> {
-            // لا يلزم تغيير الشاشة إذا كان نفسها
+            // أنت موجود أصلًا في صفحة Favorite
         });
 
         navProfile.setOnClickListener(v -> {
@@ -85,27 +99,61 @@ public class FavoriteActivity extends AppCompatActivity {
             finish();
         });
     }
-    /**
-     * onResume
-     *
-     * يتم استدعاؤها كل مرة نرجع فيها إلى الشاشة
-     *
-     * الوظيفة هنا
-     * 1) تنظيف الأدابتر الحالي
-     * 2) جلب المستخدمين الذين عليهم favorite فقط من قاعدة البيانات
-     * 3) تحديث القائمة لعرض النتائج الجديدة
-     */
+
     @Override
     protected void onResume() {
         super.onResume();
+        loadFavoriteUsers();
+    }
 
-        // تنظيف العناصر الحالية من الأدابتر
+    /**
+     * loadFavoriteUsers
+     *
+     * تجلب المستخدمين المفضلين من Room
+     * وتعرضهم داخل القائمة.
+     */
+    private void loadFavoriteUsers() {
+        allFavoriteUsers.clear();
+        allFavoriteUsers.addAll(
+                AppDatabase.getDb(this)
+                        .myCinemaUserQuery()
+                        .getFavoriteUsers()
+        );
+
         adapteruser.clear();
+        adapteruser.addAll(allFavoriteUsers);
+        adapteruser.notifyDataSetChanged();
 
-        // جلب المستخدمين المفضلين فقط من قاعدة البيانات
-        adapteruser.addAll(AppDatabase.getDb(this).myCinemaUserQuery().getFavoriteUsers());
+        filterFavoriteUsers(etFavoriteSearch.getText().toString());
+    }
 
-        // تحديث الأدابتر بعد الإضافة
+    /**
+     * filterFavoriteUsers
+     *
+     * تبحث داخل قائمة المفضلة حسب الاسم أو الدور.
+     *
+     * @param text النص الذي يكتبه المستخدم في البحث
+     */
+    private void filterFavoriteUsers(String text) {
+        ArrayList<MyCinemaUser> filteredList = new ArrayList<>();
+        String searchText = text.toLowerCase().trim();
+
+        for (MyCinemaUser user : allFavoriteUsers) {
+            String fullName = user.getFullName() != null
+                    ? user.getFullName().toLowerCase()
+                    : "";
+
+            String role = user.getRole() != null
+                    ? user.getRole().toLowerCase()
+                    : "";
+
+            if (fullName.contains(searchText) || role.contains(searchText)) {
+                filteredList.add(user);
+            }
+        }
+
+        adapteruser.clear();
+        adapteruser.addAll(filteredList);
         adapteruser.notifyDataSetChanged();
     }
 }

@@ -40,6 +40,17 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
 
+/**
+ * HomeActivity
+ *
+ * شاشة الهوم.
+ *
+ * الوظائف:
+ * 1. عرض جميع المستخدمين من Firebase.
+ * 2. البحث العادي حسب الاسم أو الدور.
+ * 3. البحث الذكي باستخدام AI.
+ * 4. التنقل إلى Profile و Works و Favorite.
+ */
 public class HomeActivity extends AppCompatActivity {
 
     private TextView navProfile, navProjects, navFavorite;
@@ -52,6 +63,9 @@ public class HomeActivity extends AppCompatActivity {
 
     private GenerativeModel ai;
     private GenerativeModelFutures model;
+
+    private DatabaseReference usersRef;
+    private ValueEventListener usersListener;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -73,19 +87,19 @@ public class HomeActivity extends AppCompatActivity {
         etSearch = findViewById(R.id.etSearch);
         btnAiSearch = findViewById(R.id.btnAiSearch);
         listusers = findViewById(R.id.listusers);
-try {
-    ai = FirebaseAI.getInstance(GenerativeBackend.googleAI())
-            .generativeModel("gemini-3-flash-preview");
-
-    model = GenerativeModelFutures.from(ai);
-}
-catch (Exception e) {
-    e.printStackTrace();
-}
-
 
         adapteruser = new MyCinemAdapter(this, R.layout.actor_item_layout);
         listusers.setAdapter(adapteruser);
+
+        try {
+            ai = FirebaseAI.getInstance(GenerativeBackend.googleAI())
+                    .generativeModel("gemini-3-flash-preview");
+
+            model = GenerativeModelFutures.from(ai);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         btnAiSearch.setOnClickListener(v -> {
             String query = etSearch.getText().toString().trim();
@@ -94,6 +108,7 @@ catch (Exception e) {
                 etSearch.setError("Write what you are looking for");
                 return;
             }
+
             if (model == null) {
                 Toast.makeText(this, "AI is not available", Toast.LENGTH_SHORT).show();
                 return;
@@ -121,6 +136,7 @@ catch (Exception e) {
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // غير مستخدمة
             }
 
             @Override
@@ -130,31 +146,34 @@ catch (Exception e) {
 
             @Override
             public void afterTextChanged(Editable s) {
+                // غير مستخدمة
             }
         });
 
-        loadUsersFromFirebase();
+        usersRef = FirebaseDatabase.getInstance().getReference("users");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        // كل مرة نرجع للهوم نحدث القائمة من Firebase
         loadUsersFromFirebase();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (usersRef != null && usersListener != null) {
+            usersRef.removeEventListener(usersListener);
+        }
+    }
+
     /**
-     * تحميل المستخدمين من Firebase Realtime Database
-     * وعرضهم داخل صفحة Home.
+     * تحميل جميع المستخدمين من Firebase وعرضهم في Home.
      */
     private void loadUsersFromFirebase() {
 
-        DatabaseReference usersRef = FirebaseDatabase
-                .getInstance()
-                .getReference("users");
-
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        usersListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -167,11 +186,17 @@ catch (Exception e) {
 
                     if (user != null) {
                         allUsers.add(user);
-                        adapteruser.add(user);
                     }
                 }
 
+                adapteruser.addAll(allUsers);
                 adapteruser.notifyDataSetChanged();
+
+                if (allUsers.isEmpty()) {
+                    Toast.makeText(HomeActivity.this,
+                            "No users found in Firebase",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -180,9 +205,14 @@ catch (Exception e) {
                         "Failed to load users: " + error.getMessage(),
                         Toast.LENGTH_SHORT).show();
             }
-        });
+        };
+
+        usersRef.addValueEventListener(usersListener);
     }
 
+    /**
+     * بحث عادي حسب الاسم أو الدور.
+     */
     private void filterUsers(String text) {
         ArrayList<MyCinemaUser> filteredList = new ArrayList<>();
         String searchText = text.toLowerCase().trim();
@@ -206,6 +236,9 @@ catch (Exception e) {
         adapteruser.notifyDataSetChanged();
     }
 
+    /**
+     * بحث ذكي باستخدام Gemini.
+     */
     private void askGemini(String userQuery) {
         if (allUsers.isEmpty()) {
             Toast.makeText(this, "No users available", Toast.LENGTH_SHORT).show();
@@ -270,6 +303,9 @@ catch (Exception e) {
         }, executor);
     }
 
+    /**
+     * عرض نتائج AI فقط.
+     */
     private void filterListByAI(String namesFromAI) {
         ArrayList<MyCinemaUser> filtered = new ArrayList<>();
         String namesLower = namesFromAI.toLowerCase();

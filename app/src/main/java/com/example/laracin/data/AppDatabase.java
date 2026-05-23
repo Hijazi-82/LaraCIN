@@ -27,7 +27,7 @@ import com.example.laracin.data.MyCinemaUserTable.MyCinemaUserQuery;
  * - allowMainThreadQueries يسمح باستعلامات على ال main thread, سهل للتجربة
  *   بس مش مفضل لتطبيق فعلي لانه ممكن يعلق الواجهة
  */
-@Database(entities = {MyCinemaUser.class}, version = 1)
+@Database(entities = {MyCinemaUser.class}, version = 6)
 public abstract class AppDatabase extends RoomDatabase {
 
     // Singleton instance

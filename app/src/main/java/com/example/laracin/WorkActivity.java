@@ -13,9 +13,15 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,50 +32,30 @@ import java.util.HashMap;
  * شاشة روابط الأعمال.
  *
  * وظيفة الشاشة:
- * - عرض روابط الأعمال التي يضيفها المستخدم.
- * - إضافة رابط جديد عن طريق AddLinkActivity.
- * - البحث داخل الروابط حسب اسم العمل أو نوعه أو وصفه.
- * - فتح الرابط عند الضغط العادي عليه.
- * - حذف الرابط عند الضغط المطوّل عليه.
+ * 1. عرض روابط الأعمال الخاصة بالمستخدم الحالي من Firebase.
+ * 2. إضافة رابط جديد عن طريق AddLinkActivity.
+ * 3. حفظ الرابط داخل Firebase.
+ * 4. البحث داخل الروابط حسب الاسم أو النوع أو الوصف.
+ * 5. فتح الرابط عند الضغط العادي.
+ * 6. حذف الرابط من Firebase عند الضغط المطوّل.
  */
 public class WorkActivity extends AppCompatActivity {
 
-    // حقول إدخال
-    // حقل البحث داخل روابط الأعمال
     private EditText etProjectsSearch;
-
-    // أزرار
-    // زر ينقل المستخدم إلى شاشة إضافة رابط جديد
     private Button btnAddLink;
-
-    // قوائم عرض
-    // ListView لعرض روابط الأعمال داخل الشاشة
     private ListView listProjectsLinks;
 
-    // عناصر التنقل بين الشاشات
-    // navHome ينقل المستخدم إلى شاشة البيت
-    // navProjects يمثل شاشة المشاريع الحالية
-    // navFavorite ينقل المستخدم إلى شاشة المفضلة
-    // navProfile ينقل المستخدم إلى شاشة البروفايل
     private TextView navHome, navProjects, navFavorite, navProfile;
 
-    // قوائم البيانات
-    // allLinksList تحفظ جميع الروابط التي تمت إضافتها
-    // filteredLinksList تحفظ الروابط بعد عملية البحث أو الفلترة
-    private ArrayList<HashMap<String, String>> allLinksList, filteredLinksList;
+    private ArrayList<HashMap<String, String>> allLinksList;
+    private ArrayList<HashMap<String, String>> filteredLinksList;
 
-    // Adapter
-    // يربط البيانات الموجودة داخل filteredLinksList مع ListView
     private SimpleAdapter adapter;
 
-    /**
-     * addLinkLauncher
-     *
-     * مسؤول عن فتح شاشة AddLinkActivity وانتظار النتيجة منها.
-     * عندما يرجع المستخدم من شاشة إضافة الرابط، يتم أخذ البيانات:
-     * workName, workType, workDescription, workLink
-     * ثم إضافتها إلى القائمة وعرضها في الشاشة.
-     */
+    private FirebaseAuth auth;
+    private DatabaseReference worksRef;
+    private DatabaseReference currentUserRef;
+
     private final ActivityResultLauncher<Intent> addLinkLauncher =
             registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
@@ -82,15 +68,7 @@ public class WorkActivity extends AppCompatActivity {
                             String workDescription = result.getData().getStringExtra("workDescription");
                             String workLink = result.getData().getStringExtra("workLink");
 
-                            HashMap<String, String> item = new HashMap<>();
-                            item.put("workName", workName);
-                            item.put("workType", workType);
-                            item.put("workDescription", workDescription);
-                            item.put("workLink", workLink);
-
-                            allLinksList.add(item);
-
-                            filterLinks(etProjectsSearch.getText().toString().trim());
+                            saveWorkToFirebase(workName, workType, workDescription, workLink);
                         }
                     }
             );
@@ -100,7 +78,8 @@ public class WorkActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_work);
 
-        // ربط عناصر الواجهة مع الكود
+        auth = FirebaseAuth.getInstance();
+
         etProjectsSearch = findViewById(R.id.etProjectsSearch);
         btnAddLink = findViewById(R.id.btnAddLink);
         listProjectsLinks = findViewById(R.id.listProjectsLinks);
@@ -110,11 +89,9 @@ public class WorkActivity extends AppCompatActivity {
         navFavorite = findViewById(R.id.navFavorite);
         navProfile = findViewById(R.id.navProfile);
 
-        // إنشاء القوائم
         allLinksList = new ArrayList<>();
         filteredLinksList = new ArrayList<>();
 
-        // إنشاء Adapter لعرض اسم العمل ونوعه داخل القائمة
         adapter = new SimpleAdapter(
                 this,
                 filteredLinksList,
@@ -123,56 +100,34 @@ public class WorkActivity extends AppCompatActivity {
                 new int[]{android.R.id.text1, android.R.id.text2}
         );
 
-        // ربط الـ Adapter مع الـ ListView
         listProjectsLinks.setAdapter(adapter);
 
-        // عند الضغط على زر Add Link يتم فتح شاشة إضافة رابط جديد
+        prepareFirebaseReferences();
+
         btnAddLink.setOnClickListener(v -> {
             Intent intent = new Intent(WorkActivity.this, AddLinkActivity.class);
             addLinkLauncher.launch(intent);
         });
 
-        // عند الضغط العادي على عنصر من القائمة يتم فتح الرابط في المتصفح
         listProjectsLinks.setOnItemClickListener((parent, view, position, id) -> {
-
             HashMap<String, String> item = filteredLinksList.get(position);
-            String link = item.get("workLink");
-
-            if (link == null || link.trim().isEmpty()) {
-                Toast.makeText(this, "No link available", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            link = link.trim();
-
-            if (!link.startsWith("http://") && !link.startsWith("https://")) {
-                link = "https://" + link;
-            }
-
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
-            startActivity(intent);
+            openWorkLink(item.get("workLink"));
         });
 
-        // عند الضغط المطوّل على عنصر من القائمة يتم حذف الرابط
         listProjectsLinks.setOnItemLongClickListener((parent, view, position, id) -> {
-
             HashMap<String, String> item = filteredLinksList.get(position);
+            String workId = item.get("workId");
 
-            allLinksList.remove(item);
-            filteredLinksList.remove(item);
-
-            adapter.notifyDataSetChanged();
-
-            Toast.makeText(this, "Link deleted", Toast.LENGTH_SHORT).show();
+            if (workId != null && worksRef != null) {
+                deleteWorkFromFirebase(workId);
+            }
 
             return true;
         });
 
-        // البحث داخل الروابط أثناء الكتابة
         etProjectsSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // غير مستخدمة
             }
 
             @Override
@@ -182,47 +137,202 @@ public class WorkActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                // غير مستخدمة
             }
         });
 
-        // الانتقال إلى شاشة البيت
         navHome.setOnClickListener(v -> {
             Intent intent = new Intent(WorkActivity.this, HomeActivity.class);
             startActivity(intent);
             finish();
         });
 
-        // الانتقال إلى شاشة المفضلة
         navFavorite.setOnClickListener(v -> {
             Intent intent = new Intent(WorkActivity.this, FavoriteActivity.class);
             startActivity(intent);
             finish();
         });
 
-        // الانتقال إلى شاشة البروفايل / تعديل البروفايل
         navProfile.setOnClickListener(v -> {
             Intent intent = new Intent(WorkActivity.this, ProfileActivity.class);
             startActivity(intent);
             finish();
         });
 
-        // المستخدم موجود أصلاً في شاشة المشاريع
         navProjects.setOnClickListener(v -> {
+            // المستخدم موجود أصلًا في شاشة الأعمال
         });
+    }
+
+    /**
+     * prepareFirebaseReferences
+     *
+     * تجهز مسار المستخدم الحالي في Firebase.
+     * كل الأعمال تحفظ تحت:
+     * users / uid / works
+     */
+    private void prepareFirebaseReferences() {
+
+        if (auth.getCurrentUser() == null) {
+            Toast.makeText(this, "No signed in user", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String uid = auth.getCurrentUser().getUid();
+
+        currentUserRef = FirebaseDatabase
+                .getInstance()
+                .getReference("users")
+                .child(uid);
+
+        worksRef = currentUserRef.child("works");
+
+        loadWorksFromFirebase();
+    }
+
+    /**
+     * loadWorksFromFirebase
+     *
+     * تجلب روابط الأعمال الخاصة بالمستخدم الحالي من Firebase.
+     */
+    private void loadWorksFromFirebase() {
+
+        if (worksRef == null) {
+            return;
+        }
+
+        worksRef.get().addOnSuccessListener(snapshot -> {
+
+            allLinksList.clear();
+
+            for (DataSnapshot data : snapshot.getChildren()) {
+
+                String workId = data.getKey();
+                String workName = data.child("workName").getValue(String.class);
+                String workType = data.child("workType").getValue(String.class);
+                String workDescription = data.child("workDescription").getValue(String.class);
+                String workLink = data.child("workLink").getValue(String.class);
+
+                HashMap<String, String> item = new HashMap<>();
+                item.put("workId", workId);
+                item.put("workName", workName);
+                item.put("workType", workType);
+                item.put("workDescription", workDescription);
+                item.put("workLink", workLink);
+
+                allLinksList.add(item);
+            }
+
+            filterLinks(etProjectsSearch.getText().toString().trim());
+            updateWorksCountInFirebase();
+
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Failed to load works", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    /**
+     * saveWorkToFirebase
+     *
+     * تحفظ رابط عمل جديد في Firebase.
+     */
+    private void saveWorkToFirebase(String workName,
+                                    String workType,
+                                    String workDescription,
+                                    String workLink) {
+
+        if (worksRef == null) {
+            Toast.makeText(this, "Firebase not ready", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String workId = worksRef.push().getKey();
+
+        if (workId == null) {
+            Toast.makeText(this, "Failed to create work id", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        HashMap<String, Object> workMap = new HashMap<>();
+        workMap.put("workName", workName);
+        workMap.put("workType", workType);
+        workMap.put("workDescription", workDescription);
+        workMap.put("workLink", workLink);
+
+        worksRef.child(workId).setValue(workMap).addOnCompleteListener(task -> {
+
+            if (task.isSuccessful()) {
+                Toast.makeText(this, "Work saved", Toast.LENGTH_SHORT).show();
+
+                // حفظ آخر عمل أيضًا داخل بيانات المستخدم للتوافق مع الكلاسات القديمة
+                currentUserRef.child("workName").setValue(workName);
+                currentUserRef.child("workType").setValue(workType);
+                currentUserRef.child("workDescription").setValue(workDescription);
+                currentUserRef.child("workLink").setValue(workLink);
+
+                loadWorksFromFirebase();
+
+            } else {
+                Toast.makeText(this, "Failed to save work", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
+     * deleteWorkFromFirebase
+     *
+     * تحذف رابط عمل من Firebase حسب workId.
+     */
+    private void deleteWorkFromFirebase(String workId) {
+
+        worksRef.child(workId).removeValue().addOnCompleteListener(task -> {
+
+            if (task.isSuccessful()) {
+                Toast.makeText(this, "Work deleted", Toast.LENGTH_SHORT).show();
+                loadWorksFromFirebase();
+            } else {
+                Toast.makeText(this, "Failed to delete work", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
+     * updateWorksCountInFirebase
+     *
+     * تحفظ عدد الأعمال داخل بيانات المستخدم.
+     * لاحقًا ProfileActivity يقدر يعرض هذا الرقم.
+     */
+    private void updateWorksCountInFirebase() {
+        if (currentUserRef != null) {
+            currentUserRef.child("workCount").setValue(allLinksList.size());
+        }
+    }
+
+    /**
+     * openWorkLink
+     *
+     * تفتح رابط العمل في المتصفح.
+     */
+    private void openWorkLink(String link) {
+
+        if (link == null || link.trim().isEmpty()) {
+            Toast.makeText(this, "No link available", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        link = link.trim();
+
+        if (!link.startsWith("http://") && !link.startsWith("https://")) {
+            link = "https://" + link;
+        }
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+        startActivity(intent);
     }
 
     /**
      * filterLinks
      *
-     * دالة تبحث داخل روابط الأعمال.
-     *
-     * البحث يتم حسب:
-     * - اسم العمل
-     * - نوع العمل
-     * - وصف العمل
-     *
-     * @param query النص الذي يكتبه المستخدم في خانة البحث
+     * تبحث داخل روابط الأعمال حسب الاسم أو النوع أو الوصف.
      */
     private void filterLinks(String query) {
 

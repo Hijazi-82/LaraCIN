@@ -109,7 +109,7 @@ public class MyCinemAdapter extends ArrayAdapter<MyCinemaUser> {
             tvltmNote.setText(user.getSkills());
             imCinemaUser.setImageBitmap(stringToBitmap(user.profileImageUri));
 
-            // عرض صورة المستخدم اذا كانت موجودة
+
 
 
             // فتح صفحة البروفايل عند الضغط على زر القلم / الملاحظة

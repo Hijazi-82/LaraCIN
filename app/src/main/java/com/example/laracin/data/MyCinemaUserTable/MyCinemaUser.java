@@ -96,6 +96,7 @@ public class MyCinemaUser implements Serializable {
     public String workType;
     public String workDescription;
     public String workLink;
+    public int workCount ;
 
     @ColumnInfo(name = "is_favorite")
     private boolean favorite;
@@ -233,6 +234,13 @@ public class MyCinemaUser implements Serializable {
         this.workLink = workLink;
     }
 
+    public int getWorkCount() {
+        return workCount;
+    }
+
+    public void setWorkCount(int workCount) {
+        this.workCount = workCount;
+    }
     /**
      * toString
      * مفيد للتجربة والتشخيص, يعرض كل الحقول كنص واحد
