@@ -29,7 +29,7 @@ import com.google.firebase.database.ValueEventListener;
  * 2 ربط ListView بالـ Adapter
  * 3 عند الرجوع للشاشة onResume, تحديث محتوى القائمة حسب البيانات
  *
- * ملاحظة
+
  * جلب المستخدمين من Room موجود لكنه معلق حاليا, لذلك القائمة لن تمتلئ ببيانات
  */
 public class Activity_main1 extends AppCompatActivity {
